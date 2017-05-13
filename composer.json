@@ -1,5 +1,5 @@
 {
-    "name": "michaeldegroot/doctrine-encrypt-bundle",
+    "name": "ambta/doctrine-encrypt-bundle",
     "type": "library",
     "keywords": ["doctrine", "symfony", "aes256", "rijndael", "encrypt", "decrypt"],
     "license": "MIT",
@@ -8,6 +8,7 @@
         "php": ">=5.4",
         "symfony/framework-bundle": ">=2.5",
         "doctrine/orm": ">=2.5",
+        "defuse/php-encryption": "^2.0",
         "ext-mcrypt": "*"
     },
     "autoload": {
