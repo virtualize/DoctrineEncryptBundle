@@ -36,10 +36,10 @@ abstract class AbstractCommand extends ContainerAwareCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
-        $container = $this->getContainer();
-        $this->entityManager = $container->get('doctrine.orm.entity_manager');
+        $container              = $this->getContainer();
+        $this->entityManager    = $container->get('doctrine.orm.entity_manager');
         $this->annotationReader = $container->get('annotation_reader');
-        $this->subscriber = $container->get('ambta_doctrine_encrypt.subscriber');
+        $this->subscriber       = $container->get('ambta_doctrine_encrypt.subscriber');
     }
 
     /**

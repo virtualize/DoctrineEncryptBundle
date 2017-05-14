@@ -16,50 +16,46 @@ use ParagonIE\Halite\Symmetric\Crypto;
  * @author Michael de Groot <specamps@gmail.com>
  */
 
-class HaliteEncryptor implements EncryptorInterface {
-    /**
-     * @var string
-     */
-    private $secretKey;
-
+class HaliteEncryptor implements EncryptorInterface
+{
     /**
      * {@inheritdoc}
      */
-    public function __construct($secret) {
-        $this->secret     = $secret;
-
-        // Root dir
-        $this->storeInDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+    public function __construct($oDoctrineEncryptSubscriber)
+    {
+        $this->encryptionKey = null;
+        $this->storeInDir    = $oDoctrineEncryptSubscriber->projectRoot;
+        $this->fileName      = (new \ReflectionClass($this))->getShortName() . '.key';
+        $this->fullStorePath = $this->storeInDir . $this->fileName;
     }
 
-    private function getKey() {
-        try {
-            $encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->storeInDir . '/databaseEncryption.key');
-        } catch (\ParagonIE\Halite\Alerts\CannotPerformOperation $e) {
-            $encryptionKey = KeyFactory::deriveEncryptionKey(new HiddenString($this->secret), random_bytes(16));
-           \ParagonIE\Halite\KeyFactory::save($encryptionKey, $this->storeInDir . '/databaseEncryption.key');
+    private function getKey()
+    {
+        if ($this->encryptionKey === null) {
+            try {
+                $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->fullStorePath);
+            } catch (\ParagonIE\Halite\Alerts\CannotPerformOperation $e) {
+                $this->encryptionKey = KeyFactory::generateEncryptionKey();
+                \ParagonIE\Halite\KeyFactory::save($encryptionKey, $this->fullStorePath);
+            }
         }
 
-        return $encryptionKey;
+        return $this->encryptionKey;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function encrypt($data) {
-        return \ParagonIE\Halite\Symmetric\Crypto::encrypt(
-            new HiddenString($data),
-            $this->getKey()
-        ) . '<ENC>';
+    public function encrypt($data)
+    {
+        return \ParagonIE\Halite\Symmetric\Crypto::encrypt(new HiddenString($data), $this->getKey()) . '<ENC>';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrypt($data) {
-        return \ParagonIE\Halite\Symmetric\Crypto::decrypt(
-            $data,
-            $this->getKey()
-        );
+    public function decrypt($data)
+    {
+        return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
     }
 }

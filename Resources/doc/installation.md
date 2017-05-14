@@ -1,19 +1,20 @@
-#Installation
+# Installation
 
-1. Download AmbtaDoctrineEncryptBundle using composer
+1. Download DoctrineEncryptBundle using composer
 2. Enable the database encryption bundle
 3. Configure the database encryption bundle
 
 ### Requirements
 
-* php 5.4
-* php-mcrypt
-* [doctrine/orm](https://packagist.org/packages/doctrine/orm) >= 2.5
-* [symfony/framework-bundle](https://packagist.org/packages/symfony/framework-bundle) >= 2.0
+ - PHP 5.6
+ - Should at least be able to install [paragonie/random_compat](https://github.com/paragonie/random_compat)
+ - Should at least be able to install [Defuse](https://github.com/defuse/php-encryption)
+ - [doctrine/orm](https://packagist.org/packages/doctrine/orm) >= 2.5
+ - [symfony/framework-bundle](https://packagist.org/packages/symfony/framework-bundle) >= 2.0
 
-### Step 1: Download AmbtaDoctrineEncryptBundle using composer
+### Step 1: Download DoctrineEncryptBundle using composer
 
-AmbtaDoctrineEncryptBundle should be installed usin [Composer](http://getcomposer.org/):
+DoctrineEncryptBundle should be installed using [Composer](http://getcomposer.org/):
 
 ``` js
 {

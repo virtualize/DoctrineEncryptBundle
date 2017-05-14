@@ -42,12 +42,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     private $annReader;
 
     /**
-     * Secret key
-     * @var string
-     */
-    private $secretKey;
-
-    /**
      * Used for restoring the encryptor after changing it
      * @var string
      */
@@ -70,19 +64,21 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      *
      * @param Reader $annReader
      * @param string $encryptorClass  The encryptor class.  This can be empty if a service is being provided.
-     * @param string $secretKey The secret key.
      * @param EncryptorInterface|NULL $service (Optional)  An EncryptorInterface.
      *
      * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
+    public function __construct(Reader $annReader, $encryptorClass, EncryptorInterface $service = NULL) {
         $this->annReader = $annReader;
-        $this->secretKey = $secretKey;
+
+        $this->projectRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
+
+        $encryptorClass = '\\Ambta\\DoctrineEncryptBundle\\Encryptors\\' . ucfirst($encryptorClass) . 'Encryptor';
 
         if ($service instanceof EncryptorInterface) {
             $this->encryptor = $service;
         } else {
-            $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
+            $this->encryptor = $this->encryptorFactory($encryptorClass);
         }
 
         $this->restoreEncryptor = $this->encryptor;
@@ -96,7 +92,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     public function setEncryptor($encryptorClass) {
 
         if(!is_null($encryptorClass)) {
-            $this->encryptor = $this->encryptorFactory($encryptorClass, $this->secretKey);
+            $this->encryptor = $this->encryptorFactory($encryptorClass);
             return;
         }
 
@@ -289,6 +285,28 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     }
 
     /**
+     * Creates a CSPRNG from paragonie/random_compat
+     *
+     * @param int $length length of bytes
+     *
+     * @return string
+     */
+    public function generateRandomString($length = 256) {
+        try {
+            $string = random_bytes($length);
+        } catch (TypeError $e) {
+            die('An unexpected error has occurred with random_bytes');
+        } catch (Error $e) {
+            die('An unexpected error has occurredwith random_bytes');
+        } catch (Exception $e) {
+            // If you get this message, the CSPRNG failed hard.
+            die('Could not generate a random string. Is our OS secure?');
+        }
+
+        return bin2hex($string);
+    }
+
+    /**
      * Recursive function to get an associative array of class properties
      * including inherited ones from extended classes
      *
@@ -320,15 +338,14 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * Encryptor factory. Checks and create needed encryptor
      *
      * @param string $classFullName Encryptor namespace and name
-     * @param string $secretKey Secret key for encryptor
      *
      * @return EncryptorInterface
      * @throws \RuntimeException
      */
-    private function encryptorFactory($classFullName, $secretKey) {
+    private function encryptorFactory($classFullName) {
         $refClass = new \ReflectionClass($classFullName);
         if ($refClass->implementsInterface(self::ENCRYPTOR_INTERFACE_NS)) {
-            return new $classFullName($secretKey);
+            return new $classFullName($this);
         } else {
             throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
         }

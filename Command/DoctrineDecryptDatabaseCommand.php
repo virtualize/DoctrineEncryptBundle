@@ -53,9 +53,8 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
                 {
                     $this->subscriber->setEncryptor($input->getArgument('encryptor'));
                 } else {
-                    $output->writeln('\nGiven encryptor does not exists');
+                    $output->writeln('Given encryptor does not exists');
                     $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
-                    $output->writeln('You can also define your own class. (example: Ambta\DoctrineEncryptBundle\Encryptors\Rijndael128Encryptor)');
                     return;
                 }
             }

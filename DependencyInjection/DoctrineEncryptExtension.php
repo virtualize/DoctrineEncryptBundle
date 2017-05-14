@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Initialization of bundle.
@@ -17,8 +18,8 @@ use Symfony\Component\DependencyInjection\Loader;
 class DoctrineEncryptExtension extends Extension {
 
     public static $supportedEncryptorClasses = array(
-        'defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
-        'halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
+        'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
+        'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
     );
 
     /**
@@ -36,29 +37,19 @@ class DoctrineEncryptExtension extends Extension {
         //set supported encryptor classes
         $supportedEncryptorClasses = self::$supportedEncryptorClasses;
 
-        //If no secret key is set, check for framework secret, otherwise throw exception
-        if (empty($config['secret_key'])) {
-            if ($container->hasParameter('secret')) {
-                $config['secret_key'] = $container->getParameter('secret');
-            } else {
-                throw new \RuntimeException('You must provide "secret_key" for DoctrineEncryptBundle or "secret" for framework');
-            }
-        }
-
-        //If empty encryptor class, use Rijndael 256 encryptor
+        //If empty encryptor class, use Halite encryptor
         if(empty($config['encryptor_class'])) {
             if(isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
                 $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
             } else {
-                $config['encryptor_class'] = $supportedEncryptorClasses['halite'];
+                $config['encryptor_class'] = $supportedEncryptorClasses['Halite'];
             }
         }
 
-        //Set parameters
+        // Set parameters
         $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class']);
-        $container->setParameter('ambta_doctrine_encrypt.secret_key', $config['secret_key']);
 
-        //Load service file
+        // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load(sprintf('%s.yml', $services['orm']));
 

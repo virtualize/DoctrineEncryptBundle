@@ -4,23 +4,31 @@ This is an fork from the original bundle created by ambta which can be found her
 [ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
 
 This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
-ECB mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
+
+ambta/DoctrineEncryptBundle is **not** secured, It uses old crypto functions and programming mistakes like supplying a IV in ECB mode (which does nothing)
 
 ### Using [Defuse](https://github.com/defuse/php-encryption)
 
 ```yml
 ambta_doctrine_encrypt:
-    secret_key:      secret key not so secret (CHANGE THIS!!)
-    encryptor_class: \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
+    encryptor_class: Defuse
 ```
 
 ### Using [Halite](https://github.com/paragonie/halite)
 
-*Note that the secret key is omitted because it is generated for you in a file in the project root called databaseEncryption.key*
-
 ```yml
 ambta_doctrine_encrypt:
-    encryptor_class: \Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor
+    encryptor_class: Halite
+```
+
+### Secret key
+
+Secret key is generated if there is no key found. This is automatically generated and stored in your project root folder
+
+**Make sure to add the .key file to your .gitignore!**
+
+```
+*.key
 ```
 
 ### Documentation

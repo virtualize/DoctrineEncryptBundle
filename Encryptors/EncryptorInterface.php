@@ -4,16 +4,16 @@ namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Encryptor interface for encryptors
- * 
+ *
  * @author Victor Melnik <melnikvictorl@gmail.com>
  */
-interface EncryptorInterface {
+interface EncryptorInterface
+{
 
     /**
-     * Must accept secret key for encryption
-     * @param string $secretKey the encryption key
+     * @param object $this DoctrineEncryptSubscriber
      */
-    public function __construct($secretKey);
+    public function __construct($oDoctrineEncryptSubscriber);
 
     /**
      * @param string $data Plain text to encrypt

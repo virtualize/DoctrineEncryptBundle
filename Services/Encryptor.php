@@ -17,9 +17,7 @@ class Encryptor
     {
 
         $reflectionClass = new \ReflectionClass($encryptName);
-        $this->encryptor = $reflectionClass->newInstanceArgs( array(
-            $key
-        ));
+        $this->encryptor = $reflectionClass->newInstanceArgs();
     }
 
     public function getEncryptor() {

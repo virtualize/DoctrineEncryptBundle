@@ -52,10 +52,9 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
                 {
                     $this->subscriber->setEncryptor($input->getArgument('encryptor'));
                 } else {
-                    $output->writeln('\nGiven encryptor does not exists');
-                    $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
-                    $output->writeln('You can also define your own class. (example: Ambta\DoctrineEncryptBundle\Encryptors\Rijndael128Encryptor)');
-                    return;
+                    $output->writeln('Given encryptor does not exists');
+
+                    return $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
                 }
             }
         }
@@ -102,7 +101,7 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
         }
 
         //Say it is finished
-        $output->writeln("\nEncryption finished. Values encrypted: <info>" . $this->subscriber->encryptCounter . " values</info>.\nAll values are now encrypted.");
+        $output->writeln("Encryption finished. Values encrypted: <info>" . $this->subscriber->encryptCounter . " values</info>.\nAll values are now encrypted.");
     }
 
 
