@@ -6,18 +6,22 @@ This is an fork from the original bundle created by ambta which can be found her
 This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
 CBC mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
 
-### Important!
-Set this in your config for secured encryption!
+### Using [defuse](https://github.com/defuse/php-encryption)
+
 ```yml
 ambta_doctrine_encrypt:
     secret_key:      secret key not so secret (CHANGE THIS!!)
     encryptor_class: \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
 ```
 
-### Encryptors
+### Using [Halite](https://github.com/paragonie/halite)
 
- - \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
- - \Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor
+*Note that the secret key is omitted because it is generated for you in a file in the project root called databaseEncryption.key*
+
+```yml
+ambta_doctrine_encrypt:
+    encryptor_class: \Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor
+```
 
 ### Documentation
 
