@@ -25,11 +25,7 @@ ambta_doctrine_encrypt:
 
 Secret key is generated if there is no key found. This is automatically generated and stored in your project root folder
 
-**Make sure to add the .key file to your .gitignore!**
-
-```
-*.key
-```
+Filename example: `.DefuseEncryptor.key`
 
 ### Documentation
 
