@@ -1,12 +1,12 @@
 # michaeldegroot/DoctrineEncryptBundle
 
 This is an fork from the original bundle created by ambta which can be found here:
-[ambta/DoctrineEncryptBundle](https://github.com/michaeldegroot/DoctrineEncryptBundle)
+[ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
 
 This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
-CBC mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
+ECB mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
 
-### Using [defuse](https://github.com/defuse/php-encryption)
+### Using [Defuse](https://github.com/defuse/php-encryption)
 
 ```yml
 ambta_doctrine_encrypt:
