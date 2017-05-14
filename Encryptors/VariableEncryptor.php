@@ -4,7 +4,6 @@ namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Class for variable encryption
- *
  * @author Victor Melnik <melnikvictorl@gmail.com>
  */
 class VariableEncryptor implements EncryptorInterface {

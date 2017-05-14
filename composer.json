@@ -1,0 +1,24 @@
+{
+    "name": "michaeldegroot/doctrine-encrypt-bundle",
+    "type": "library",
+    "keywords": ["doctrine", "symfony", "aes256", "rijndael", "encrypt", "decrypt"],
+    "license": "MIT",
+    "description": "Symfony 2 bundle which allows to encrypt data in database with some encrypt algorithm",
+    "require": {
+        "php": ">=5.4",
+        "symfony/framework-bundle": ">=2.5",
+        "doctrine/orm": ">=2.5",
+        "defuse/php-encryption": "^2.0",
+        "ext-mcrypt": "*"
+    },
+    "autoload": {
+        "psr-0": { "Ambta\\DoctrineEncryptBundle": "" }
+    },
+    "target-dir": "Ambta/DoctrineEncryptBundle",
+    "authors": [
+        {
+            "name": "Marcel van Nuil",
+            "email": "marcel@ambta.com"
+        }
+    ]
+}
