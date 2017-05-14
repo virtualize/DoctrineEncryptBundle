@@ -11,9 +11,9 @@ There are 3 paramaters in the configuration of the Doctrine encryption bundle wh
     * Default: rijndael256
 
 * **encryptor_class** - Custom class for encrypting data
-    * Encryptor class, [your own encryptor class](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/custom_encryptor.md) will override encryptor paramater
+    * Encryptor class, [your own encryptor class](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/custom_encryptor.md) will override encryptor paramater
     * Default: empty
-    
+
 ## yaml
 
 ``` yaml
@@ -25,7 +25,7 @@ ambta_doctrine_encrypt:
 
 ### xml
 
-``` xml 
+``` xml
 <ambta_doctrine_encrypt:config>
         <!-- Your own random 256 bit key (32 characters) -->
         <ambta_doctrine_encrypt:secret_key>AB1CD2EF3GH4IJ5KL6MN7OP8QR9ST0UW</ambta_doctrine_encrypt:secret_key>
@@ -40,4 +40,4 @@ ambta_doctrine_encrypt:
 
 Read how to use the database encryption bundle in your project.
 
-#### [Usage](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/usage.md)
+#### [Usage](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/usage.md)

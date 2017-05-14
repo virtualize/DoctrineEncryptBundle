@@ -16,7 +16,10 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class DoctrineEncryptExtension extends Extension {
 
-    public static $supportedEncryptorClasses = array('defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor');
+    public static $supportedEncryptorClasses = array(
+        'defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
+        'halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
+    );
 
     /**
      * {@inheritDoc}
@@ -47,7 +50,7 @@ class DoctrineEncryptExtension extends Extension {
             if(isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
                 $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
             } else {
-                $config['encryptor_class'] = $supportedEncryptorClasses['defuse'];
+                $config['encryptor_class'] = $supportedEncryptorClasses['halite'];
             }
         }
 

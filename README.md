@@ -1,7 +1,7 @@
 # michaeldegroot/DoctrineEncryptBundle
 
 This is an fork from the original bundle created by ambta which can be found here:
-[ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
+[ambta/DoctrineEncryptBundle](https://github.com/michaeldegroot/DoctrineEncryptBundle)
 
 This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
 CBC mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
@@ -10,10 +10,14 @@ CBC mode is not secured, which is what ambta/DoctrineEncryptBundle is using.
 Set this in your config for secured encryption!
 ```yml
 ambta_doctrine_encrypt:
-    secret_key:           secret key not so secret
-    encryptor:            DefuseEncryptor
-    encryptor_class:      \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
+    secret_key:      secret key not so secret (CHANGE THIS!!)
+    encryptor_class: \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
 ```
+
+### Encryptors
+
+ - \Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor
+ - \Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor
 
 ### Documentation
 

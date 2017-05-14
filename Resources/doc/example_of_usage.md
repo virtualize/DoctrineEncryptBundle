@@ -1,19 +1,5 @@
 #Example Of Usage
 
-Lets imagine that we are storing some private data in our database and we don't want 
-to somebody can see it even if he will get raw database on his hands in some dirty way. 
-With this bundle this task can be easily made and we even don't see these processes 
-because bundle uses some doctrine life cycle events. In database information will 
-be encoded. In the same time entities in program will be clear as always and all 
-these things will be happen automatically.
-
-## Simple example
-
-For example, we have some user entity with two fields which we want to encode in database.
-We must import annotation `@Encrypted` first and then mark fields with it.
-
-###Doctrine Entity
-
 ```php
 namespace Acme\DemoBundle\Entity;
 
@@ -27,7 +13,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
  * @ORM\Table(name="user_v")
  */
 class UserV {
-    
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -35,33 +21,33 @@ class UserV {
      * @var int
      */
     private $id;
-    
+
     /**
      * @ORM\Column(type="text", name="total_money")
      * @Encrypted
      * @var int
      */
     private $totalMoney;
-    
+
     /**
      * @ORM\Column(type="string", length=100, name="first_name")
      * @var string
      */
     private $firstName;
-    
+
     /**
      * @ORM\Column(type="string", length=100, name="last_name")
      * @var string
      */
     private $lastName;
-    
+
     /**
      * @ORM\Column(type="text", name="credit_card_number")
      * @Encrypted
      * @var string
      */
     private $creditCardNumber;
-    
+
     //common getters/setters here...
 
 }
@@ -130,11 +116,11 @@ class DemoController extends Controller
         <dt>Credit card<dt>
         <dd>{{ user.creditCardNumber }}</dd>
     </dl>
-</div> 
+</div>
 ```
 
-When we follow link /show-user/{x}, where x - id of our user in DB, we will see that 
-user's information is decoded and in the same time information in database will 
+When we follow link /show-user/{x}, where x - id of our user in DB, we will see that
+user's information is decoded and in the same time information in database will
 be encoded. In database we'll have something like this:
 
 ```
@@ -149,4 +135,4 @@ So our information is encoded and all okay.
 
 ###Requirements
 
-You need `DoctrineFixturesBundle` and `php-mcrypt` extension for this example
+You need `DoctrineFixturesBundle` and `defuse/php-encryption` extension for this example
