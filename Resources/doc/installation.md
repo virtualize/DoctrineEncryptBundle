@@ -49,6 +49,6 @@ public function registerBundles()
 ### Step 3: Set your configuration
 
 All configuration value's are optional.
-On the following page you can find de configuration information.
+On the following page you can find the configuration information.
 
 #### [Configuration](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/configuration.md)
