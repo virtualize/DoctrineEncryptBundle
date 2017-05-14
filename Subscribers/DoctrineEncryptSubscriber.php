@@ -222,7 +222,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
 
             //Get the real class, we don't want to use the proxy classes
-            if(strstr(get_class($entity), "Proxies")) {
+            if(strstr(get_class($entity), 'Proxies')) {
                 $realClass = ClassUtils::getClass($entity);
             } else {
                 $realClass = get_class($entity);
@@ -273,9 +273,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
                              * Then decrypt, encrypt the information if not empty, information is an string and the <ENC> tag is there (decrypt) or not (encrypt).
                              * The <ENC> will be added at the end of an encrypted string so it is marked as encrypted. Also protects against double encryption/decryption
                              */
-                            if($encryptorMethod == "decrypt") {
+                            if($encryptorMethod == 'decrypt') {
                                 if(!is_null($getInformation) and !empty($getInformation)) {
-                                    if(substr($getInformation, -5) == "<ENC>") {
+                                    if(substr($getInformation, -5) == '<ENC>') {
                                         $this->decryptCounter++;
                                         $currentPropValue = $this->encryptor->decrypt(substr($getInformation, 0, -5));
                                         $entity->$setter($currentPropValue);
@@ -283,7 +283,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
                                 }
                             } else {
                                 if(!is_null($getInformation) and !empty($getInformation)) {
-                                    if(substr($entity->$getter(), -5) != "<ENC>") {
+                                    if(substr($entity->$getter(), -5) != '<ENC>') {
                                         $this->encryptCounter++;
                                         $currentPropValue = $this->encryptor->encrypt($entity->$getter());
                                         $entity->$setter($currentPropValue);
