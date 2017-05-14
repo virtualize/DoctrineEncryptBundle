@@ -19,7 +19,7 @@ DoctrineEncryptBundle should be installed using [Composer](http://getcomposer.or
 ``` js
 {
     "require": {
-        "michaeldegroot/doctrine-encrypt-bundle": "2.4.*"
+        "michaeldegroot/doctrine-encrypt-bundle": "3.0.*"
     }
 }
 ```
