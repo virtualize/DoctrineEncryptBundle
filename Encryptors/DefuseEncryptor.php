@@ -8,7 +8,7 @@ namespace Ambta\DoctrineEncryptBundle\Encryptors;
  * @author Michael de Groot <specamps@gmail.com>
  */
 
-class SecureEncryptor implements EncryptorInterface {
+class DefuseEncryptor implements EncryptorInterface {
     /**
      * @var string
      */
@@ -25,13 +25,13 @@ class SecureEncryptor implements EncryptorInterface {
      * {@inheritdoc}
      */
     public function encrypt($data) {
-        return \Defuse\Crypto\Crypto::Encrypt($data, $this->secret);
+        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->secret) . '<ENC>';
     }
 
     /**
      * {@inheritdoc}
      */
     public function decrypt($data) {
-        return \Defuse\Crypto\Crypto::Decrypt($data, $this->secret);
+        return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->secret);
     }
 }
