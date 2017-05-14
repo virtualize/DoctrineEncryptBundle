@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DoctrineEncryptStatusCommand extends AbstractCommand
 {
-
     /**
      * {@inheritdoc}
      */
@@ -32,7 +31,7 @@ class DoctrineEncryptStatusCommand extends AbstractCommand
         $metaDataArray = $this->entityManager->getMetadataFactory()->getAllMetadata();
 
         $totalCount = 0;
-        foreach($metaDataArray as $metaData) {
+        foreach ($metaDataArray as $metaData) {
             if ($metaData->isMappedSuperclass) {
                 continue;
             }

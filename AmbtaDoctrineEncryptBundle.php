@@ -8,13 +8,15 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Ambta\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
 use Ambta\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
 
-class AmbtaDoctrineEncryptBundle extends Bundle {
-    
-    public function build(ContainerBuilder $container) {
+class AmbtaDoctrineEncryptBundle extends Bundle
+{
+
+    public function build(ContainerBuilder $container)
+    {
         parent::build($container);
         $container->addCompilerPass(new RegisterServiceCompilerPass(), PassConfig::TYPE_AFTER_REMOVING);
     }
-    
+
     public function getContainerExtension()
     {
         return new DoctrineEncryptExtension();

@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  **/
 abstract class AbstractCommand extends ContainerAwareCommand
 {
-
     /**
      * @var EntityManagerInterface
      */
@@ -52,6 +51,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function getEntityIterator($entityName)
     {
         $query = $this->entityManager->createQuery(sprintf('SELECT o FROM %s o', $entityName));
+
         return $query->iterate();
     }
 
@@ -65,6 +65,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function getTableCount($entityName)
     {
         $query = $this->entityManager->createQuery(sprintf('SELECT COUNT(o) FROM %s o', $entityName));
+
         return (int) $query->getSingleScalarResult();
     }
 
@@ -104,7 +105,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function getEncryptionableProperties($entityMetaData)
     {
         //Create reflectionClass for each meta data object
-        $reflectionClass = New \ReflectionClass($entityMetaData->name);
+        $reflectionClass = new \ReflectionClass($entityMetaData->name);
         $propertyArray = $reflectionClass->getProperties();
         $properties    = [];
 

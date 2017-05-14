@@ -19,7 +19,6 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class DoctrineDecryptDatabaseCommand extends AbstractCommand
 {
-
     /**
      * {@inheritdoc}
      */
@@ -28,7 +27,7 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
         $this
             ->setName('doctrine:decrypt:database')
             ->setDescription('Decrypt whole database on tables which are encrypted')
-            ->addArgument("encryptor", InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with')
+            ->addArgument('encryptor', InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with')
             ->addArgument('batchSize', InputArgument::OPTIONAL, 'The update/flush batch size', 20);
     }
 
@@ -37,35 +36,34 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //Get entity manager, question helper, subscriber service and annotation reader
+        // Get entity manager, question helper, subscriber service and annotation reader
         $question = $this->getHelper('question');
 
-        //Get list of supported encryptors
+        // Get list of supported encryptors
         $supportedExtensions = DoctrineEncryptExtension::$supportedEncryptorClasses;
         $batchSize = $input->getArgument('batchSize');
 
-        //If encryptor has been set use that encryptor else use default
-        if($input->getArgument('encryptor')) {
-            if(isset($supportedExtensions[$input->getArgument('encryptor')])) {
+        // If encryptor has been set use that encryptor else use default
+        if ($input->getArgument('encryptor')) {
+            if (isset($supportedExtensions[$input->getArgument('encryptor')])) {
                 $this->subscriber->setEncryptor($supportedExtensions[$input->getArgument('encryptor')]);
             } else {
-                if(class_exists($input->getArgument('encryptor')))
-                {
+                if (class_exists($input->getArgument('encryptor'))) {
                     $this->subscriber->setEncryptor($input->getArgument('encryptor'));
                 } else {
                     $output->writeln('Given encryptor does not exists');
-                    $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
-                    return;
+
+                    return $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));;
                 }
             }
         }
 
-        //Get entity manager metadata
+        // Get entity manager metadata
         $metaDataArray = $this->entityManager->getMetadataFactory()->getAllMetadata();
 
-        //Set counter and loop through entity manager meta data
+        // Set counter and loop through entity manager meta data
         $propertyCount = 0;
-        foreach($metaDataArray as $metaData) {
+        foreach ($metaDataArray as $metaData) {
             if ($metaData->isMappedSuperclass) {
                 continue;
             }
@@ -75,61 +73,54 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
         }
 
         $confirmationQuestion = new ConfirmationQuestion(
-            "<question>\n" . count($metaDataArray) . " entities found which are containing " . $propertyCount . " properties with the encryption tag. \n\n" .
-            "Which are going to be decrypted with [" . $this->subscriber->getEncryptor() . "]. \n\n" .
-            "Wrong settings can mess up your data and it will be unrecoverable. \n" .
-            "I advise you to make <bg=yellow;options=bold>a backup</bg=yellow;options=bold>. \n\n" .
-            "Continue with this action? (y/yes)</question>", false
+            '<question>' . count($metaDataArray) . ' entities found which are containing ' . $propertyCount . ' properties with the encryption tag. ' . PHP_EOL . '' .
+            'Which are going to be decrypted with [' . $this->subscriber->getEncryptor() . ']. ' . PHP_EOL . '' .
+            'Wrong settings can mess up your data and it will be unrecoverable. ' . PHP_EOL . '' .
+            'I advise you to make <bg=yellow;options=bold>a backup</bg=yellow;options=bold>. ' . PHP_EOL . '' .
+            'Continue with this action? (y/yes)</question>', false
         );
 
         if (!$question->ask($input, $output, $confirmationQuestion)) {
             return;
         }
 
-        //Start decrypting database
-        $output->writeln("\nDecrypting all fields. This can take up to several minutes depending on the database size.");
+        // Start decrypting database
+        $output->writeln('' . PHP_EOL . 'Decrypting all fields. This can take up to several minutes depending on the database size.');
 
         $valueCounter = 0;
 
-        //Loop through entity manager meta data
-        foreach($this->getEncryptionableEntityMetaData() as $metaData) {
+        // Loop through entity manager meta data
+        foreach ($this->getEncryptionableEntityMetaData() as $metaData) {
             $i = 0;
             $iterator = $this->getEntityIterator($metaData->name);
             $totalCount = $this->getTableCount($metaData->name);
 
             $output->writeln(sprintf('Processing <comment>%s</comment>', $metaData->name));
             $progressBar = new ProgressBar($output, $totalCount);
-            foreach($iterator as $row) {
+            foreach ($iterator as $row) {
                 $entity = $row[0];
 
-                //Create reflectionClass for each entity
-                $entityReflectionClass = New \ReflectionClass($entity);
+                // Create reflectionClass for each entity
+                $entityReflectionClass = new \ReflectionClass($entity);
 
                 //Get the current encryptor used
                 $encryptorUsed = $this->subscriber->getEncryptor();
 
                 //Loop through the property's in the entity
-                foreach($this->getEncryptionableProperties($metaData) as $property) {
-                    //Get and check getters and setters
+                foreach ($this->getEncryptionableProperties($metaData) as $property) {
                     $methodeName = ucfirst($property->getName());
 
-                    $getter = "get" . $methodeName;
-                    $setter = "set" . $methodeName;
+                    $getter = 'get' . $methodeName;
+                    $setter = 'set' . $methodeName;
 
                     //Check if getter and setter are set
-                    if($entityReflectionClass->hasMethod($getter) && $entityReflectionClass->hasMethod($setter)) {
-
-                        //Get decrypted data
+                    if ($entityReflectionClass->hasMethod($getter) && $entityReflectionClass->hasMethod($setter)) {
                         $unencrypted = $entity->$getter();
-
-                        //Set raw data
                         $entity->$setter($unencrypted);
-
                         $valueCounter++;
                     }
                 }
 
-                //Disable the encryptor
                 $this->subscriber->setEncryptor(null);
                 $this->entityManager->persist($entity);
 
@@ -140,23 +131,19 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
                 $progressBar->advance(1);
                 $i++;
 
-                //Set the encryptor again
                 $this->subscriber->setEncryptor($encryptorUsed);
             }
 
 
             $progressBar->finish();
             $output->writeln('');
-            //Get the current encryptor used
             $encryptorUsed = $this->subscriber->getEncryptor();
             $this->subscriber->setEncryptor(null);
             $this->entityManager->flush();
             $this->entityManager->clear();
-            //Set the encryptor again
             $this->subscriber->setEncryptor($encryptorUsed);
         }
 
-        //Say it is finished
-        $output->writeln("\nDecryption finished values found: <info>" . $valueCounter . "</info>, decrypted: <info>" . $this->subscriber->decryptCounter . "</info>.\nAll values are now decrypted.");
+        $output->writeln('' . PHP_EOL . 'Decryption finished values found: <info>' . $valueCounter . '</info>, decrypted: <info>' . $this->subscriber->decryptCounter . '</info>.' . PHP_EOL . 'All values are now decrypted.');
     }
 }

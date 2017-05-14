@@ -17,7 +17,6 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class DoctrineEncryptDatabaseCommand extends AbstractCommand
 {
-
     /**
      * {@inheritdoc}
      */
@@ -28,7 +27,6 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
             ->setDescription('Encrypt whole database on tables which are not encrypted yet')
             ->addArgument('encryptor', InputArgument::OPTIONAL, 'The encryptor you want to decrypt the database with')
             ->addArgument('batchSize', InputArgument::OPTIONAL, 'The update/flush batch size', 20);
-
     }
 
     /**
@@ -36,20 +34,19 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //Get entity manager, question helper, subscriber service and annotation reader
+        // Get entity manager, question helper, subscriber service and annotation reader
         $question = $this->getHelper('question');
         $batchSize = $input->getArgument('batchSize');
 
-        //Get list of supported encryptors
+        // Get list of supported encryptors
         $supportedExtensions = DoctrineEncryptExtension::$supportedEncryptorClasses;
 
-        //If encryptor has been set use that encryptor else use default
-        if($input->getArgument('encryptor')) {
-            if(isset($supportedExtensions[$input->getArgument('encryptor')])) {
+        // If encryptor has been set use that encryptor else use default
+        if ($input->getArgument('encryptor')) {
+            if (isset($supportedExtensions[$input->getArgument('encryptor')])) {
                 $this->subscriber->setEncryptor($supportedExtensions[$input->getArgument('encryptor')]);
             } else {
-                if(class_exists($input->getArgument('encryptor')))
-                {
+                if (class_exists($input->getArgument('encryptor'))) {
                     $this->subscriber->setEncryptor($input->getArgument('encryptor'));
                 } else {
                     $output->writeln('Given encryptor does not exists');
@@ -59,25 +56,25 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
             }
         }
 
-        //Get entity manager metadata
+        // Get entity manager metadata
         $metaDataArray = $this->getEncryptionableEntityMetaData();
         $confirmationQuestion = new ConfirmationQuestion(
-            "<question>\n" . count($metaDataArray) . " entities found which are containing properties with the encryption tag.\n\n" .
-            "Which are going to be encrypted with [" . $this->subscriber->getEncryptor() . "]. \n\n".
-            "Wrong settings can mess up your data and it will be unrecoverable. \n" .
-            "I advise you to make <bg=yellow;options=bold>a backup</bg=yellow;options=bold>. \n\n" .
-            "Continue with this action? (y/yes)</question>", false
+            '<question>' . count($metaDataArray) . ' entities found which are containing properties with the encryption tag.' . PHP_EOL . '' .
+            'Which are going to be encrypted with [' . $this->subscriber->getEncryptor() . ']. ' . PHP_EOL . ''.
+            'Wrong settings can mess up your data and it will be unrecoverable. ' . PHP_EOL . '' .
+            'I advise you to make <bg=yellow;options=bold>a backup</bg=yellow;options=bold>. ' . PHP_EOL . '' .
+            'Continue with this action? (y/yes)</question>', false
         );
 
         if (!$question->ask($input, $output, $confirmationQuestion)) {
             return;
         }
 
-        //Start decrypting database
-        $output->writeln("\nEncrypting all fields can take up to several minutes depending on the database size.");
+        // Start decrypting database
+        $output->writeln('' . PHP_EOL . 'Encrypting all fields can take up to several minutes depending on the database size.');
 
-        //Loop through entity manager meta data
-        foreach($metaDataArray as $metaData) {
+        // Loop through entity manager meta data
+        foreach ($metaDataArray as $metaData) {
             $i = 0;
             $iterator = $this->getEntityIterator($metaData->name);
             $totalCount = $this->getTableCount($metaData->name);
@@ -100,8 +97,8 @@ class DoctrineEncryptDatabaseCommand extends AbstractCommand
             $this->entityManager->flush();
         }
 
-        //Say it is finished
-        $output->writeln("Encryption finished. Values encrypted: <info>" . $this->subscriber->encryptCounter . " values</info>.\nAll values are now encrypted.");
+        // Say it is finished
+        $output->writeln('Encryption finished. Values encrypted: <info>' . $this->subscriber->encryptCounter . ' values</info>.' . PHP_EOL . 'All values are now encrypted.');
     }
 
 

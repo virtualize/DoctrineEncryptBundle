@@ -20,15 +20,18 @@ class Encryptor
         $this->encryptor = $reflectionClass->newInstanceArgs();
     }
 
-    public function getEncryptor() {
+    public function getEncryptor()
+    {
         return $this->encryptor;
     }
 
-    public function decrypt($string) {
+    public function decrypt($string)
+    {
         return $this->encryptor->decrypt($string);
     }
 
-    public function encrypt($string) {
+    public function encrypt($string)
+    {
         return $this->encryptor->encrypt($string);
     }
 }

@@ -10,16 +10,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * @author wpigott
  */
-class RegisterServiceCompilerPass implements CompilerPassInterface {
-
+class RegisterServiceCompilerPass implements CompilerPassInterface
+{
     /**
      * can modify the container here before dumped to PHP code
      *
      * @param ContainerBuilder $container
      */
-    public function process(ContainerBuilder $container) {
-        //Nothing here
+    public function process(ContainerBuilder $container)
+    {
+        // Nothing here, ORLY?
     }
 }
-
-?>

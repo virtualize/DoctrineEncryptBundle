@@ -15,8 +15,8 @@ use Symfony\Component\Finder\Finder;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class DoctrineEncryptExtension extends Extension {
-
+class DoctrineEncryptExtension extends Extension
+{
     public static $supportedEncryptorClasses = array(
         'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
         'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
@@ -25,21 +25,22 @@ class DoctrineEncryptExtension extends Extension {
     /**
      * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container) {
+    public function load(array $configs, ContainerBuilder $container)
+    {
 
-        //Create configuration object
+        // Create configuration object
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        //Set orm-service in array of services
+        // Set orm-service in array of services
         $services = array('orm' => 'orm-services');
 
-        //set supported encryptor classes
+        // set supported encryptor classes
         $supportedEncryptorClasses = self::$supportedEncryptorClasses;
 
-        //If empty encryptor class, use Halite encryptor
-        if(empty($config['encryptor_class'])) {
-            if(isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
+        // If empty encryptor class, use Halite encryptor
+        if (empty($config['encryptor_class'])) {
+            if (isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
                 $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
             } else {
                 $config['encryptor_class'] = $supportedEncryptorClasses['Halite'];
@@ -52,7 +53,6 @@ class DoctrineEncryptExtension extends Extension {
         // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load(sprintf('%s.yml', $services['orm']));
-
     }
 
     /**
@@ -60,7 +60,8 @@ class DoctrineEncryptExtension extends Extension {
      *
      * @return string
      */
-    public function getAlias() {
+    public function getAlias()
+    {
         return 'ambta_doctrine_encrypt';
     }
 }
