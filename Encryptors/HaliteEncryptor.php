@@ -29,20 +29,6 @@ class HaliteEncryptor implements EncryptorInterface
         $this->fullStorePath = $this->storeInDir . $this->fileName;
     }
 
-    private function getKey()
-    {
-        if ($this->encryptionKey === null) {
-            try {
-                $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->fullStorePath);
-            } catch (\ParagonIE\Halite\Alerts\CannotPerformOperation $e) {
-                $this->encryptionKey = KeyFactory::generateEncryptionKey();
-                \ParagonIE\Halite\KeyFactory::save($encryptionKey, $this->fullStorePath);
-            }
-        }
-
-        return $this->encryptionKey;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -57,5 +43,19 @@ class HaliteEncryptor implements EncryptorInterface
     public function decrypt($data)
     {
         return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
+    }
+
+    private function getKey()
+    {
+        if ($this->encryptionKey === null) {
+            try {
+                $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->fullStorePath);
+            } catch (\ParagonIE\Halite\Alerts\CannotPerformOperation $e) {
+                $this->encryptionKey = KeyFactory::generateEncryptionKey();
+                \ParagonIE\Halite\KeyFactory::save($this->encryptionKey, $this->fullStorePath);
+            }
+        }
+
+        return $this->encryptionKey;
     }
 }

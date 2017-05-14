@@ -74,7 +74,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
         $this->projectRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
 
-        $encryptorClass = '\\Ambta\\DoctrineEncryptBundle\\Encryptors\\' . ucfirst($encryptorClass) . 'Encryptor';
+        if (class_exists(ucfirst($encryptorClass)) === false) {
+            $encryptorClass = '\\Ambta\\DoctrineEncryptBundle\\Encryptors\\' . ucfirst($encryptorClass) . 'Encryptor';
+        } else {
+            $encryptorClass = ucfirst($encryptorClass);
+        }
 
         if ($service instanceof EncryptorInterface) {
             $this->encryptor = $service;

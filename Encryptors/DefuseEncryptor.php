@@ -26,20 +26,6 @@ class DefuseEncryptor implements EncryptorInterface
         $this->fs                         = new Filesystem();
     }
 
-    private function getKey()
-    {
-        if ($this->encryptionKey === null) {
-            if ($this->fs->exists($this->fullStorePath)) {
-                $this->encryptionKey = file_get_contents($this->fullStorePath);
-            } else {
-                $this->encryptionKey = $this->oDoctrineEncryptSubscriber->generateRandomString();
-                $this->fs->dumpFile($this->fullStorePath, $this->encryptionKey);
-            }
-        }
-
-        return $this->encryptionKey;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -54,5 +40,19 @@ class DefuseEncryptor implements EncryptorInterface
     public function decrypt($data)
     {
         return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->getKey());
+    }
+
+    private function getKey()
+    {
+        if ($this->encryptionKey === null) {
+            if ($this->fs->exists($this->fullStorePath)) {
+                $this->encryptionKey = file_get_contents($this->fullStorePath);
+            } else {
+                $this->encryptionKey = $this->oDoctrineEncryptSubscriber->generateRandomString();
+                $this->fs->dumpFile($this->fullStorePath, $this->encryptionKey);
+            }
+        }
+
+        return $this->encryptionKey;
     }
 }
