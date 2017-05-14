@@ -21,7 +21,7 @@ class DefuseEncryptor implements EncryptorInterface
         $this->encryptionKey              = null;
         $this->oDoctrineEncryptSubscriber = $oDoctrineEncryptSubscriber;
         $this->storeInDir                 = $oDoctrineEncryptSubscriber->projectRoot;
-        $this->fileName                   = (new \ReflectionClass($this))->getShortName() . '.key';
+        $this->fileName                   = '.' . (new \ReflectionClass($this))->getShortName() . '.key';
         $this->fullStorePath              = $this->storeInDir . $this->fileName;
         $this->fs                         = new Filesystem();
     }
@@ -45,7 +45,7 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function encrypt($data)
     {
-        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->encryptionKey) . '<ENC>';
+        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->getKey()) . '<ENC>';
     }
 
     /**
@@ -53,6 +53,6 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function decrypt($data)
     {
-        return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->encryptionKey);
+        return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->getKey());
     }
 }

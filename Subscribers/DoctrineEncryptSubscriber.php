@@ -19,7 +19,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 */
 class DoctrineEncryptSubscriber implements EventSubscriber
 {
-
     /**
      * Encryptor interface namespace
     */

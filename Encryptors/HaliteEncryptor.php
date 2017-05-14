@@ -25,7 +25,7 @@ class HaliteEncryptor implements EncryptorInterface
     {
         $this->encryptionKey = null;
         $this->storeInDir    = $oDoctrineEncryptSubscriber->projectRoot;
-        $this->fileName      = (new \ReflectionClass($this))->getShortName() . '.key';
+        $this->fileName      = '.' . (new \ReflectionClass($this))->getShortName() . '.key';
         $this->fullStorePath = $this->storeInDir . $this->fileName;
     }
 
