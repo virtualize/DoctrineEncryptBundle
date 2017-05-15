@@ -2,13 +2,10 @@
 
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
-use \ParagonIE\Halite\{
-    Asymmetric\Crypto as Asymmetric,
-    HiddenString,
-    EncryptionKey,
-    KeyFactory
-};
-use ParagonIE\Halite\Symmetric\Crypto;
+use \ParagonIE\Halite\HiddenString;
+use \ParagonIE\Halite\EncryptionKey;
+use \ParagonIE\Halite\KeyFactory;
+use \ParagonIE\Halite\Symmetric\Crypto;
 
 /**
  * Class for encrypting and decrypting with the halite library
