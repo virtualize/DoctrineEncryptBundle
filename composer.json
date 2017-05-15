@@ -7,7 +7,6 @@
     "require": {
         "php": ">=5.4",
         "defuse/php-encryption": "^2.0",
-        "paragonie/halite": "^3.2",
         "paragonie/random_compat": "^2.0"
     },
     "autoload": {
