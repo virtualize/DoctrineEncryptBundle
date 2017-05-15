@@ -14,6 +14,12 @@ ambta_doctrine_encrypt:
     encryptor_class: Halite # or Defuse
 ```
 
+## Important!
+
+If you want to use Halite, make sure to require it!
+
+composer require "paragonie/halite 3.2"
+
 ## Usage
 
 Read how to use the database encryption bundle in your project.
