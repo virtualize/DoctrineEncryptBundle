@@ -40,6 +40,7 @@ Filename example: `.DefuseEncryptor.key` or `.HaliteEncryptor.key`
 ### Documentation
 
 * [Installation](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/installation.md)
+* [Requirements](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/installation.md#requirements)
 * [Configuration](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/configuration.md)
 * [Usage](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/usage.md)
 * [Console commands](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/commands.md)
