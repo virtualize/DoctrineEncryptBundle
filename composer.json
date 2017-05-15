@@ -6,12 +6,9 @@
     "description": "Encrypted symfony entity's by verified and standardized libraries",
     "require": {
         "php": ">=5.4",
-        "symfony/framework-bundle": ">=2.5",
-        "doctrine/orm": ">=2.5",
         "defuse/php-encryption": "^2.0",
         "paragonie/halite": "^3.2",
-        "paragonie/random_compat": "^2.0",
-        "ext-mcrypt": "*"
+        "paragonie/random_compat": "^2.0"
     },
     "autoload": {
         "psr-0": { "Ambta\\DoctrineEncryptBundle": "" }
