@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
  */
 class DoctrineEncryptExtension extends Extension
 {
-    public static $supportedEncryptorClasses = array(
+    const SupportedEncryptorClasses = array(
         'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
         'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
     );
@@ -35,14 +35,11 @@ class DoctrineEncryptExtension extends Extension
         // Set orm-service in array of services
         $services = array('orm' => 'orm-services');
 
-        // set supported encryptor classes
-        $supportedEncryptorClasses = self::$supportedEncryptorClasses;
-
         // If empty encryptor class, use Halite encryptor
-        if(in_array($config['encryptor_class'],array_keys($supportedEncryptorClasses))){
-            $config['encryptor_class_full'] = $supportedEncryptorClasses[$config['encryptor_class']];
+        if(in_array($config['encryptor_class'],array_keys(self::SupportedEncryptorClasses))){
+            $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
         }else{
-            throw new \LogicException('You have supply a valid encryptor in configuration for DoctrineEncryptBundle.');
+            $config['encryptor_class_full'] = self::SupportedEncryptorClasses['Halite'];
         }
 
         // Set parameters

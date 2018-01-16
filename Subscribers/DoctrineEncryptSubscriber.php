@@ -2,6 +2,7 @@
 
 namespace Ambta\DoctrineEncryptBundle\Subscribers;
 
+use ReflectionClass;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
@@ -10,7 +11,6 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
-use \ReflectionClass;
 use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -19,6 +19,11 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 */
 class DoctrineEncryptSubscriber implements EventSubscriber
 {
+    /**
+     * Appended to end of encrypted value
+     */
+    const ENCRYPTION_MARKER = '<ENC>';
+
     /**
      * Encryptor interface namespace
     */
@@ -68,39 +73,21 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * This allows for the use of dependency injection for the encrypters.
     */
-    public function __construct(Reader $annReader, $encryptorClass, EncryptorInterface $service = NULL)
+    public function __construct(Reader $annReader, EncryptorInterface $encryptor)
     {
         $this->annReader = $annReader;
-
-        if (class_exists(ucfirst($encryptorClass)) === false) {
-            $encryptorClass = '\\Ambta\\DoctrineEncryptBundle\\Encryptors\\' . ucfirst($encryptorClass) . 'Encryptor';
-        } else {
-            $encryptorClass = ucfirst($encryptorClass);
-        }
-
-        if ($service instanceof EncryptorInterface) {
-            $this->encryptor = $service;
-        } else {
-            $this->encryptor = $this->encryptorFactory($encryptorClass);
-        }
-
+        $this->encryptor = $encryptor;
         $this->restoreEncryptor = $this->encryptor;
     }
 
     /**
      * Change the encryptor
-     *
-     * @param $encryptorClass encryptorClass the encryptor class
+     * @param [type] $[name] [<description>]
+     * @param EncryptorInterface $encryptorClass 
     */
-    public function setEncryptor($encryptorClass)
+    public function setEncryptor(EncryptorInterface $encryptorClass)
     {
-        if (!is_null($encryptorClass)) {
-            $this->encryptor = $this->encryptorFactory($encryptorClass);
-
-            return;
-        }
-
-        $this->encryptor = null;
+        $this->encryptor = $encryptorClass;
     }
 
     /**
@@ -110,11 +97,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     */
     public function getEncryptor()
     {
-        if (!empty($this->encryptor)) {
-            return get_class($this->encryptor);
-        } else {
-            return null;
-        }
+        return $this->encryptor;
     }
 
     /**
@@ -253,7 +236,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                     $value = $pac->getValue($entity, $refProperty->getName());
                     if ($encryptorMethod == 'decrypt') {
                         if (!is_null($value) and !empty($value)) {
-                            if (substr($value, -5) == '<ENC>') {
+                            if (substr($value, -strlen(self::ENCRYPTION_MARKER)) == self::ENCRYPTION_MARKER) {
                                 $this->decryptCounter++;
                                 $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -5));
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
@@ -261,9 +244,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
-                            if (substr($value, -5) != '<ENC>') {
+                            if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                 $this->encryptCounter++;
-                                $currentPropValue = $this->encryptor->encrypt($value);
+                                $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                             }
                         }
@@ -274,30 +257,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             return $entity;
         }
 
-        return null;
-    }
-
-    /**
-     * Creates a CSPRNG from paragonie/random_compat
-     *
-     * @param int $length length of bytes
-     *
-     * @return string
-     */
-    public function generateRandomString($length = 256)
-    {
-        try {
-            $string = random_bytes($length);
-        } catch (TypeError $e) {
-            die('An unexpected error has occurred with random_bytes');
-        } catch (Error $e) {
-            die('An unexpected error has occurredwith random_bytes');
-        } catch (Exception $e) {
-            // If you get this message, the CSPRNG failed hard.
-            die('Could not generate a random string. Is our OS secure?');
-        }
-
-        return bin2hex($string);
+        return $entity;
     }
 
     private function handleEmbeddedAnnotation($entity, $embeddedProperty, $isEncryptOperation = true)
@@ -341,23 +301,5 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         }
 
         return $propertiesArray;
-    }
-
-    /**
-     * Encryptor factory. Checks and create needed encryptor
-     *
-     * @param string $classFullName Encryptor namespace and name
-     *
-     * @return EncryptorInterface
-     * @throws \RuntimeException
-     */
-    private function encryptorFactory($classFullName)
-    {
-        $refClass = new \ReflectionClass($classFullName);
-        if ($refClass->implementsInterface(self::ENCRYPTOR_INTERFACE_NS)) {
-            return new $classFullName($this);
-        } else {
-            throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
-        }
     }
 }

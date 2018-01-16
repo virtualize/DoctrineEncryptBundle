@@ -12,13 +12,14 @@ This parameter is also optional.
 ``` yaml
 ambta_doctrine_encrypt:
     encryptor_class: Halite # or Defuse
+    secret_directory_path: '%kernel.project_dir%'   # Path where to store the keyfiles
 ```
 
 ## Important!
 
-If you want to use Halite, make sure to require it!
+If you want to use Defuse, make sure to require it!
 
-composer require "paragonie/halite 3.2"
+composer require "defuse/php-encryption ^2.0"
 
 ## Usage
 
