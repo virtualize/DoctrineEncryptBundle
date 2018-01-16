@@ -72,8 +72,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         $this->annReader = $annReader;
 
-        $this->projectRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR;
-
         if (class_exists(ucfirst($encryptorClass)) === false) {
             $encryptorClass = '\\Ambta\\DoctrineEncryptBundle\\Encryptors\\' . ucfirst($encryptorClass) . 'Encryptor';
         } else {

@@ -5,9 +5,12 @@
     "license": "MIT",
     "description": "Encrypted symfony entity's by verified and standardized libraries",
     "require": {
-        "php": ">=5.4",
-        "defuse/php-encryption": "^2.0",
-        "paragonie/random_compat": "^2.0"
+        "php": ">=7.0",
+        "paragonie/halite": "^3.0 || ^4.0",
+        "paragonie/sodium_compat": "^1.5"
+    },
+    "suggest":{
+        "defuse/php-encryption": "Alternative for halite for use with older php-versions"
     },
     "autoload": {
         "psr-0": { "Ambta\\DoctrineEncryptBundle": "" }

@@ -39,16 +39,15 @@ class DoctrineEncryptExtension extends Extension
         $supportedEncryptorClasses = self::$supportedEncryptorClasses;
 
         // If empty encryptor class, use Halite encryptor
-        if (empty($config['encryptor_class'])) {
-            if (isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
-                $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
-            } else {
-                $config['encryptor_class'] = $supportedEncryptorClasses['Halite'];
-            }
+        if(in_array($config['encryptor_class'],array_keys($supportedEncryptorClasses))){
+            $config['encryptor_class_full'] = $supportedEncryptorClasses[$config['encryptor_class']];
+        }else{
+            throw new \LogicException('You have supply a valid encryptor in configuration for DoctrineEncryptBundle.');
         }
 
         // Set parameters
-        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class']);
+        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
+        $container->setParameter('ambta_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
 
         // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
