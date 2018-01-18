@@ -11,9 +11,9 @@ interface EncryptorInterface
 {
 
     /**
-     * @param object $this DoctrineEncryptSubscriber
+     * @param string $keyFile Path where to find and store the keyfile
      */
-    public function __construct($oDoctrineEncryptSubscriber);
+    public function __construct(string $keyFile);
 
     /**
      * @param string $data Plain text to encrypt

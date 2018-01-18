@@ -29,6 +29,10 @@ class Configuration implements ConfigurationInterface
         $rootNode
                 ->children()
                     ->scalarNode('encryptor_class')
+                        ->defaultValue('Halite')
+                    ->end()
+                    ->scalarNode('secret_directory_path')
+                        ->defaultValue('%kernel.project_dir%')
                     ->end()
                 ->end();
 

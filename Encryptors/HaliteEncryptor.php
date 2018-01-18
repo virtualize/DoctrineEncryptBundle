@@ -15,15 +15,16 @@ use \ParagonIE\Halite\Symmetric\Crypto;
 
 class HaliteEncryptor implements EncryptorInterface
 {
+    private $encryptionKey;
+    private $keyFile;
+
     /**
      * {@inheritdoc}
      */
-    public function __construct($oDoctrineEncryptSubscriber)
+    public function __construct($keyFile)
     {
         $this->encryptionKey = null;
-        $this->storeInDir    = $oDoctrineEncryptSubscriber->projectRoot;
-        $this->fileName      = '.' . (new \ReflectionClass($this))->getShortName() . '.key';
-        $this->fullStorePath = $this->storeInDir . $this->fileName;
+        $this->keyFile = $keyFile;
     }
 
     /**
@@ -31,7 +32,7 @@ class HaliteEncryptor implements EncryptorInterface
      */
     public function encrypt($data)
     {
-        return \ParagonIE\Halite\Symmetric\Crypto::encrypt(new HiddenString($data), $this->getKey()) . '<ENC>';
+        return \ParagonIE\Halite\Symmetric\Crypto::encrypt(new HiddenString($data), $this->getKey());
     }
 
     /**
@@ -46,10 +47,10 @@ class HaliteEncryptor implements EncryptorInterface
     {
         if ($this->encryptionKey === null) {
             try {
-                $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->fullStorePath);
+                $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->keyFile);
             } catch (\ParagonIE\Halite\Alerts\CannotPerformOperation $e) {
                 $this->encryptionKey = KeyFactory::generateEncryptionKey();
-                \ParagonIE\Halite\KeyFactory::save($this->encryptionKey, $this->fullStorePath);
+                \ParagonIE\Halite\KeyFactory::save($this->encryptionKey, $this->keyFile);
             }
         }
 

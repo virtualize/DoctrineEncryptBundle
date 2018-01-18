@@ -17,7 +17,7 @@ use Symfony\Component\Finder\Finder;
  */
 class DoctrineEncryptExtension extends Extension
 {
-    public static $supportedEncryptorClasses = array(
+    const SupportedEncryptorClasses = array(
         'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
         'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
     );
@@ -35,20 +35,16 @@ class DoctrineEncryptExtension extends Extension
         // Set orm-service in array of services
         $services = array('orm' => 'orm-services');
 
-        // set supported encryptor classes
-        $supportedEncryptorClasses = self::$supportedEncryptorClasses;
-
         // If empty encryptor class, use Halite encryptor
-        if (empty($config['encryptor_class'])) {
-            if (isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
-                $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
-            } else {
-                $config['encryptor_class'] = $supportedEncryptorClasses['Halite'];
-            }
+        if(in_array($config['encryptor_class'],array_keys(self::SupportedEncryptorClasses))){
+            $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
+        }else{
+            $config['encryptor_class_full'] = self::SupportedEncryptorClasses['Halite'];
         }
 
         // Set parameters
-        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class']);
+        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
+        $container->setParameter('ambta_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
 
         // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));

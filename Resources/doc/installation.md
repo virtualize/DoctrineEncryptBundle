@@ -6,9 +6,9 @@
 
 ### Requirements
 
- - PHP >=5.5
- - Comes with package: [paragonie/random_compat](https://github.com/paragonie/random_compat) ^2.0
- - Comes with package: [Defuse](https://github.com/defuse/php-encryption) ^2.0
+ - PHP >=7.0
+ - Comes with package: [paragonie/sodium_compat](https://github.com/paragonie/sodium_compat) ^1.5
+ - Comes with package: [Halite](https://github.com/paragonie/halite) ^3.0
  - [doctrine/orm](https://packagist.org/packages/doctrine/orm) >= 2.0
  - [symfony/framework-bundle](https://packagist.org/packages/symfony/framework-bundle) >= 2.0
 

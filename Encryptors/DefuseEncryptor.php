@@ -13,17 +13,18 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class DefuseEncryptor implements EncryptorInterface
 {
+    private $fs;
+    private $encryptionKey;
+    private $keyFile;
+
     /**
      * {@inheritdoc}
      */
-    public function __construct($oDoctrineEncryptSubscriber)
+    public function __construct($keyFile)
     {
-        $this->encryptionKey              = null;
-        $this->oDoctrineEncryptSubscriber = $oDoctrineEncryptSubscriber;
-        $this->storeInDir                 = $oDoctrineEncryptSubscriber->projectRoot;
-        $this->fileName                   = '.' . (new \ReflectionClass($this))->getShortName() . '.key';
-        $this->fullStorePath              = $this->storeInDir . $this->fileName;
-        $this->fs                         = new Filesystem();
+        $this->encryptionKey = null;
+        $this->keyFile       = $keyFile;
+        $this->fs            = new Filesystem();
     }
 
     /**
@@ -31,7 +32,7 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function encrypt($data)
     {
-        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->getKey()) . '<ENC>';
+        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->getKey());
     }
 
     /**
@@ -45,11 +46,12 @@ class DefuseEncryptor implements EncryptorInterface
     private function getKey()
     {
         if ($this->encryptionKey === null) {
-            if ($this->fs->exists($this->fullStorePath)) {
-                $this->encryptionKey = file_get_contents($this->fullStorePath);
+            if ($this->fs->exists($this->keyFile)) {
+                $this->encryptionKey = file_get_contents($this->keyFile);
             } else {
-                $this->encryptionKey = $this->oDoctrineEncryptSubscriber->generateRandomString();
-                $this->fs->dumpFile($this->fullStorePath, $this->encryptionKey);
+                $string = random_bytes(255);
+                $this->encryptionKey = bin2hex($string);
+                $this->fs->dumpFile($this->keyFile, $this->encryptionKey);
             }
         }
 
