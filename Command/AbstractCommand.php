@@ -4,6 +4,7 @@ namespace Ambta\DoctrineEncryptBundle\Command;
 use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -82,7 +83,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
 
         foreach ($metaDataArray as $entityMetaData)
         {
-            if ($entityMetaData->isMappedSuperclass) {
+            if ($entityMetaData instanceof ClassMetadataInfo and $entityMetaData->isMappedSuperclass) {
                 continue;
             }
 
