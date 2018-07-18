@@ -6,7 +6,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\Finder\Finder;
 
 /**
  * Initialization of bundle.
@@ -27,7 +26,6 @@ class DoctrineEncryptExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-
         // Create configuration object
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
@@ -36,9 +34,9 @@ class DoctrineEncryptExtension extends Extension
         $services = array('orm' => 'orm-services');
 
         // If empty encryptor class, use Halite encryptor
-        if(in_array($config['encryptor_class'],array_keys(self::SupportedEncryptorClasses))){
+        if (in_array($config['encryptor_class'], array_keys(self::SupportedEncryptorClasses))) {
             $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
-        }else{
+        } else {
             $config['encryptor_class_full'] = self::SupportedEncryptorClasses['Halite'];
         }
 
