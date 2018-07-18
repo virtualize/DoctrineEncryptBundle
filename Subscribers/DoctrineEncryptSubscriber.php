@@ -12,6 +12,7 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
 use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use ReflectionProperty;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -217,7 +218,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             }
 
             // Get ReflectionClass of our entity
-            $reflectionClass = new ReflectionClass($realClass);
             $properties = $this->getClassProperties($realClass);
 
             // Foreach property in the reflection class
@@ -259,9 +259,8 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         return $entity;
     }
 
-    private function handleEmbeddedAnnotation($entity, $embeddedProperty, $isEncryptOperation = true)
+    private function handleEmbeddedAnnotation($entity, ReflectionProperty $embeddedProperty, bool $isEncryptOperation = true)
     {
-        $reflectionClass = new ReflectionClass($entity);
         $propName = $embeddedProperty->getName();
 
         $pac = PropertyAccess::createPropertyAccessor();
