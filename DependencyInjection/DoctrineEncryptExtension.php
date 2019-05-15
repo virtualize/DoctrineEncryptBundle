@@ -34,7 +34,7 @@ class DoctrineEncryptExtension extends Extension
         if (in_array($config['encryptor_class'], array_keys(self::SupportedEncryptorClasses))) {
             $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
         } else {
-            $config['encryptor_class_full'] = self::SupportedEncryptorClasses['Halite'];
+            $config['encryptor_class_full'] = $config['encryptor_class'];
         }
 
         // Set parameters
