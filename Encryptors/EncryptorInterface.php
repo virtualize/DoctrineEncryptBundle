@@ -9,12 +9,6 @@ namespace Ambta\DoctrineEncryptBundle\Encryptors;
  */
 interface EncryptorInterface
 {
-
-    /**
-     * @param string $keyFile Path where to find and store the keyfile
-     */
-    public function __construct(string $keyFile);
-
     /**
      * @param string $data Plain text to encrypt
      * @return string Encrypted text
