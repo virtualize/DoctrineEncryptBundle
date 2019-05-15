@@ -42,7 +42,7 @@ class HaliteEncryptor implements EncryptorInterface
     {
         $data = \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
 
-        if (is_object($data) && $data instanceof HiddenString)
+        if ($data instanceof HiddenString)
         {
             $data = $data->getString();
         }
