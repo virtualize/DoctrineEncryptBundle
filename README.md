@@ -33,6 +33,8 @@ ambta_doctrine_encrypt:
 
 ### Secret key
 
+The secret key should be a max 32 byte hexadecimal string (`[0-9a-fA-F]`).
+
 Secret key is generated if there is no key found. This is automatically generated and stored in the folder defined in the configuration
 
 ```yml
