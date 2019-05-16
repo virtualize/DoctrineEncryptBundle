@@ -54,7 +54,7 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
                 } else {
                     $output->writeln('Given encryptor does not exists');
 
-                    return $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));;
+                    return $output->writeln('Supported encryptors: ' . implode(', ', array_keys($supportedExtensions)));
                 }
             }
         }

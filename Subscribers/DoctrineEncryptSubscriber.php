@@ -69,10 +69,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Initialization of subscriber
      *
      * @param Reader $annReader
-     * @param string $encryptorClass  The encryptor class.  This can be empty if a service is being provided.
-     * @param EncryptorInterface|NULL $service (Optional)  An EncryptorInterface.
-     *
-     * This allows for the use of dependency injection for the encrypters.
+     * @param EncryptorInterface|NULL $encryptor (Optional)  An EncryptorInterface.
      */
     public function __construct(Reader $annReader, EncryptorInterface $encryptor)
     {
@@ -83,12 +80,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Change the encryptor
-     * @param [type] $[name] [<description>]
-     * @param EncryptorInterface $encryptorClass
+     *
+     * @param EncryptorInterface $encryptor
      */
-    public function setEncryptor(EncryptorInterface $encryptorClass = null)
+    public function setEncryptor(EncryptorInterface $encryptor = null)
     {
-        $this->encryptor = $encryptorClass;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -102,7 +99,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     }
 
     /**
-     * Restore encryptor set in config
+     * Restore encryptor to the one set in the constructor.
      */
     public function restoreEncryptor()
     {
@@ -164,7 +161,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Listen to postFlush event
-     * Decrypt entities that after inserted into the database
+     * Decrypt entities after having been inserted into the database
      *
      * @param PostFlushEventArgs $postFlushEventArgs
      */
@@ -210,12 +207,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             // Check which operation to be used
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
 
-            // Get the real class, we don't want to use the proxy classes
-            if (strstr(get_class($entity), 'Proxies')) {
-                $realClass = ClassUtils::getClass($entity);
-            } else {
-                $realClass = get_class($entity);
-            }
+            $realClass = ClassUtils::getClass($entity);
 
             // Get ReflectionClass of our entity
             $properties = $this->getClassProperties($realClass);
