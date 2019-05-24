@@ -7,12 +7,12 @@
 [![Total downloads](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/downloads)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
 [![Downloads this month](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/d/monthly)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
 
-This is an fork from the original bundle created by ambta which can be found here:
+### Introduction
+
+This is a fork from the original bundle created by ambta which can be found here:
 [ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
 
 This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
-
-ambta/DoctrineEncryptBundle is **not** secured, It uses old crypto functions and programming mistakes like supplying a IV in ECB mode (which does nothing)
 
 ### Using [Halite](https://github.com/paragonie/halite)
 
