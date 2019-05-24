@@ -1,6 +1,16 @@
 # michaeldegroot/DoctrineEncryptBundle
 
-[![Build Status](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle.svg?branch=master)](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle)
+[![Build status](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle.svg?branch=master)](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle)
+
+[![License](https://img.shields.io/github/license/michaeldegroot/DoctrineEncryptBundle.svg)](https://raw.githubusercontent.com/michaeldegroot/DoctrineEncryptBundle/master/LICENSE)
+
+[![Latest version](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/version)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle)
+
+[![Latest Unstable Version](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/v/unstable)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle)
+
+[![Total downloads](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/downloads)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle)
+
+[![Downloads this month](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/d/monthly)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle)
 
 This is an fork from the original bundle created by ambta which can be found here:
 [ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
