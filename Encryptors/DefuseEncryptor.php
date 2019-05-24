@@ -3,7 +3,6 @@
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 /**
  * Class for encrypting and decrypting with the defuse library
@@ -22,7 +21,6 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function __construct(string $keyFile)
     {
-        $this->encryptionKey = null;
         $this->keyFile       = $keyFile;
         $this->fs            = new Filesystem();
     }
