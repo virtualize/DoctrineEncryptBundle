@@ -1,5 +1,7 @@
 # michaeldegroot/DoctrineEncryptBundle
 
+[![Build Status](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle.svg?branch=master)](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle)
+
 This is an fork from the original bundle created by ambta which can be found here:
 [ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
 
