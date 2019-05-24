@@ -1,4 +1,4 @@
-# michaeldegroot/DoctrineEncryptBundle
+[![Logo](https://i.imgur.com/sfmU6wt.png)](https://github.com/michaeldegroot/DoctrineEncryptBundle) 
 
 [![Build status](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle.svg?branch=master)](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle) 
 [![License](https://img.shields.io/github/license/michaeldegroot/DoctrineEncryptBundle.svg)](https://raw.githubusercontent.com/michaeldegroot/DoctrineEncryptBundle/master/LICENSE) 
