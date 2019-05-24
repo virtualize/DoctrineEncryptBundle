@@ -1,35 +1,36 @@
 {
-    "name": "michaeldegroot/doctrine-encrypt-bundle",
-    "type": "library",
-    "keywords": ["doctrine", "symfony", "halite", "defuse", "encrypt", "decrypt"],
-    "license": "MIT",
-    "description": "Encrypted symfony entity's by verified and standardized libraries",
-    "require": {
-        "php": "^7.2",
-        "paragonie/halite": "^4.3",
-        "paragonie/sodium_compat": "^1.5",
-        "doctrine/orm": "^2.5",
-        "symfony/property-access": "^4.1",
-        "symfony/dependency-injection": "^4.1",
-        "symfony/yaml": "^4.1",
-        "symfony/http-kernel": "^4.1",
-        "symfony/config": "^4.1"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^6.5",
-        "defuse/php-encryption": "^2.1"
-    },
-    "suggest":{
-        "defuse/php-encryption": "Alternative for halite for use with older php-versions"
-    },
-    "autoload": {
-        "psr-0": { "Ambta\\DoctrineEncryptBundle": "" }
-    },
-    "target-dir": "Ambta/DoctrineEncryptBundle",
-    "authors": [
-        {
-            "name": "Michael de Groot",
-            "email": "specamps@gmail.com"
-        }
-    ]
+  "name": "michaeldegroot/doctrine-encrypt-bundle",
+  "type": "library",
+  "keywords": ["doctrine", "symfony", "halite", "defuse", "encrypt", "decrypt"],
+  "license": "MIT",
+  "description": "Encrypted symfony entity's by verified and standardized libraries",
+  "require": {
+    "php": "^7.2",
+    "paragonie/halite": "^4.3",
+    "paragonie/sodium_compat": "^1.5",
+    "doctrine/orm": "^2.5",
+    "symfony/property-access": "^4.1",
+    "symfony/dependency-injection": "^4.1",
+    "symfony/yaml": "^4.1",
+    "symfony/http-kernel": "^4.1",
+    "symfony/config": "^4.1"
+  },
+  "license": "MIT",
+  "require-dev": {
+    "phpunit/phpunit": "^6.5",
+    "defuse/php-encryption": "^2.1"
+  },
+  "suggest": {
+    "defuse/php-encryption": "Alternative for halite for use with older php-versions"
+  },
+  "autoload": {
+    "psr-0": { "Ambta\\DoctrineEncryptBundle": "" }
+  },
+  "target-dir": "Ambta/DoctrineEncryptBundle",
+  "authors": [
+    {
+      "name": "GiveMeAllYourCats",
+      "email": "specamps@gmail.com"
+    }
+  ]
 }
