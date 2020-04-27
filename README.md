@@ -1,72 +1,64 @@
-#DoctrineEncryptBundle
+[![Logo](https://i.imgur.com/sfmU6wt.png)](https://github.com/michaeldegroot/DoctrineEncryptBundle) 
 
-Bundle allows to create doctrine entities with fields that will be protected with 
-help of some encryption algorithm in database and it will be clearly for developer, because bundle is uses doctrine life cycle events
+[![Build status](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle.svg?branch=master)](https://travis-ci.org/michaeldegroot/DoctrineEncryptBundle) 
+[![License](https://img.shields.io/github/license/michaeldegroot/DoctrineEncryptBundle.svg)](https://raw.githubusercontent.com/michaeldegroot/DoctrineEncryptBundle/master/LICENSE) 
+[![Latest version](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/version)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
+[![Latest Unstable Version](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/v/unstable)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
+[![Total downloads](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/downloads)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
+[![Downloads this month](https://poser.pugx.org/michaeldegroot/doctrine-encrypt-bundle/d/monthly)](https://packagist.org/packages/michaeldegroot/doctrine-encrypt-bundle) 
 
-This is an fork from the original bundle created by vmelnik-ukrain (Many thanks to him) which can be found here:
-[vmelnik-ukraine/DoctrineEncryptBundle](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle)
+### Introduction
 
-I improved several things, i make better use of the doctrine events. and it works with lazy loading (relationships)!
-This will be an long term project we will be working on with long-term support and backward compatibility. We are using this bundle in all our own symfony2 project.
-More about us can be found on our website. [Ambta.com](https://ambta.com)
+This is a fork from the original bundle created by ambta which can be found here:
+[ambta/DoctrineEncryptBundle](https://github.com/ambta/DoctrineEncryptBundle)
 
-###What does it do exactly
+This bundle has updated security by not rolling it's own encryption and using verified standardized library's from the field.
 
-It gives you the opportunity to add the @Encrypt annotation above each string property
+### Using [Halite](https://github.com/paragonie/halite)
 
-```php
-/**
- * @Encrypt
- */
-protected $username;
+*All deps are already installed with this package*
+
+```yml
+// Config.yml
+ambta_doctrine_encrypt:
+    encryptor_class: Halite
 ```
 
-The bundle uses doctrine his life cycle events to encrypt the data when inserted into the database and decrypt the data when loaded into your entity manager.
-It is only able to encrypt string values at the moment, numbers and other fields will be added later on in development.
+### Using [Defuse](https://github.com/defuse/php-encryption)
 
-###Advantages and disadvantaged of an encrypted database
+*You will need to require Defuse yourself*
 
-####Advantages
-- Information is stored safely
-- Not worrying about saving backups at other locations
-- Unreadable for employees managing the database
+`composer require "defuse/php-encryption ^2.0"`
 
-####Disadvantages
-- Can't use ORDER BY on encrypted data
-- In SELECT WHERE statements the where values also have to be encrypted
-- When you lose your key you lose your data (Make a backup of the key on a safe location)
+```yml
+// Config.yml
+ambta_doctrine_encrypt:
+    encryptor_class: Defuse
+```
 
-###Documentation
 
-This bundle is responsible for encryption/decryption of the data in your database.
-All encryption/decryption work on the server side.
 
-The following documents are available:
+### Secret key
 
-* [Installation](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/installation.md)
-* [Configuration](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/configuration.md)
-* [Usage](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/usage.md)
-* [Console commands](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/commands.md)
-* [Custom encryption class](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/custom_encryptor.md)
+The secret key should be a max 32 byte hexadecimal string (`[0-9a-fA-F]`).
 
-###License
+Secret key is generated if there is no key found. This is automatically generated and stored in the folder defined in the configuration
 
-This bundle is under the MIT license. See the complete license in the bundle
+```yml
+// Config.yml
+ambta_doctrine_encrypt:
+    secret_directory_path: '%kernel.project_dir%'   # Default value
+```
 
-###Versions
+Filename example: `.DefuseEncryptor.key` or `.HaliteEncryptor.key`
 
-I'm using Semantic Versioning like described [here](http://semver.org)
+**Do not forget to add these files to your .gitignore file, you do not want this on your repository!**
 
-###Todos
+### Documentation
 
-The following items will be done in order
-
-1. ~~Review of complete code + fixes/improvements and inline documentation (2.1.1)~~
-2. ~~Add support for the other doctrine relationships (manyToMany, ManyToOne) (2.2)~~
-4. ~~Recreate documentation (2.3)~~
-5. ~~Create example code (2.3)~~
-6. ~~Create an function to encrypt unencrypted database and vice versa (console command, migration, changed key, etc.) (2.4)~~
-7. Look for a posibility of automatic encryption of query parameters (2.5)
-8. Look for a posibility to override findOneBy for automatic encryption of parameters (2.6)
-9. Add support to encrypt data by reference to other property as key (Encrypt data specific to user with user key etc.) (2.7)
-10. Add [Format-preserving encryption](http://en.wikipedia.org/wiki/Format-preserving_encryption) for all data types [Doctrine documentation Types](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html) (3.0)
+* [Installation](Resources/doc/installation.md)
+* [Requirements](Resources/doc/installation.md#requirements)
+* [Configuration](Resources/doc/configuration.md)
+* [Usage](Resources/doc/usage.md)
+* [Console commands](Resources/doc/commands.md)
+* [Custom encryption class](Resources/doc/custom_encryptor.md)

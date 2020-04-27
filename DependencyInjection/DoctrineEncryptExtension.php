@@ -14,52 +14,36 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class DoctrineEncryptExtension extends Extension {
-
-    public static $supportedEncryptorClasses = array('rijndael256' => 'Ambta\DoctrineEncryptBundle\Encryptors\Rijndael256Encryptor',
-                                                    'rijndael128'=> 'Ambta\DoctrineEncryptBundle\Encryptors\Rijndael128Encryptor');
+class DoctrineEncryptExtension extends Extension
+{
+    const SupportedEncryptorClasses = array(
+        'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
+        'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
+    );
 
     /**
      * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container) {
-
-        //Create configuration object
+    public function load(array $configs, ContainerBuilder $container)
+    {
+        // Create configuration object
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        //Set orm-service in array of services
-        $services = array('orm' => 'orm-services');
-
-        //set supported encryptor classes
-        $supportedEncryptorClasses = self::$supportedEncryptorClasses;
-
-        //If no secret key is set, check for framework secret, otherwise throw exception
-        if (empty($config['secret_key'])) {
-            if ($container->hasParameter('secret')) {
-                $config['secret_key'] = $container->getParameter('secret');
-            } else {
-                throw new \RuntimeException('You must provide "secret_key" for DoctrineEncryptBundle or "secret" for framework');
-            }
+        // If empty encryptor class, use Halite encryptor
+        if (in_array($config['encryptor_class'], array_keys(self::SupportedEncryptorClasses))) {
+            $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
+        } else {
+            $config['encryptor_class_full'] = $config['encryptor_class'];
         }
 
-        //If empty encryptor class, use Rijndael 256 encryptor
-        if(empty($config['encryptor_class'])) {
-            if(isset($config['encryptor']) and isset($supportedEncryptorClasses[$config['encryptor']])) {
-                $config['encryptor_class'] = $supportedEncryptorClasses[$config['encryptor']];
-            } else {
-                $config['encryptor_class'] = $supportedEncryptorClasses['rijndael256'];
-            }
-        }
+        // Set parameters
+        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
+        $container->setParameter('ambta_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
 
-        //Set parameters
-        $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class']);
-        $container->setParameter('ambta_doctrine_encrypt.secret_key', $config['secret_key']);
-
-        //Load service file
+        // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load(sprintf('%s.yml', $services['orm']));
-
+        $loader->load('services.yml');
     }
 
     /**
@@ -67,7 +51,8 @@ class DoctrineEncryptExtension extends Extension {
      *
      * @return string
      */
-    public function getAlias() {
+    public function getAlias()
+    {
         return 'ambta_doctrine_encrypt';
     }
 }

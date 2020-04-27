@@ -1,24 +1,25 @@
-#Installation
+# Installation
 
-1. Download AmbtaDoctrineEncryptBundle using composer
+1. Download DoctrineEncryptBundle using composer
 2. Enable the database encryption bundle
 3. Configure the database encryption bundle
 
 ### Requirements
 
-* php 5.4 
-* php-mcrypt
-* [doctrine/orm](https://packagist.org/packages/doctrine/orm) >= 2.5
-* [symfony/framework-bundle](https://packagist.org/packages/symfony/framework-bundle) >= 2.0
+ - PHP >=7.0
+ - Comes with package: [paragonie/sodium_compat](https://github.com/paragonie/sodium_compat) ^1.5
+ - Comes with package: [Halite](https://github.com/paragonie/halite) ^3.0
+ - [doctrine/orm](https://packagist.org/packages/doctrine/orm) >= 2.0
+ - [symfony/framework-bundle](https://packagist.org/packages/symfony/framework-bundle) >= 2.0
 
-### Step 1: Download AmbtaDoctrineEncryptBundle using composer
+### Step 1: Download DoctrineEncryptBundle using composer
 
-AmbtaDoctrineEncryptBundle should be installed usin [Composer](http://getcomposer.org/):
+DoctrineEncryptBundle should be installed using [Composer](http://getcomposer.org/):
 
 ``` js
 {
     "require": {
-        "ambta/doctrine-encrypt-bundle": "2.4.*"
+        "michaeldegroot/doctrine-encrypt-bundle": "3.0.*"
     }
 }
 ```
@@ -26,7 +27,7 @@ AmbtaDoctrineEncryptBundle should be installed usin [Composer](http://getcompose
 Now tell composer to download the bundle by running the command:
 
 ``` bash
-$ php composer.phar update ambta/doctrine-encrypt-bundle
+$ php composer.phar update michaeldegroot/doctrine-encrypt-bundle
 ```
 
 Composer will install the bundle to your project's `vendor/ambta` directory.
@@ -48,6 +49,6 @@ public function registerBundles()
 ### Step 3: Set your configuration
 
 All configuration value's are optional.
-On the following page you can find de configuration information.
+On the following page you can find the configuration information.
 
-#### [Configuration](https://github.com/ambta/DoctrineEncryptBundle/blob/master/Resources/doc/configuration.md)
+#### [Configuration](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/configuration.md)

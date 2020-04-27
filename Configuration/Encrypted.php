@@ -8,6 +8,7 @@ namespace Ambta\DoctrineEncryptBundle\Configuration;
  * @author Victor Melnik <melnikvictorl@gmail.com>
  * @Annotation
  */
-class Encrypted {
-    //Just an placeholder
+class Encrypted
+{
+    // Placeholder
 }
