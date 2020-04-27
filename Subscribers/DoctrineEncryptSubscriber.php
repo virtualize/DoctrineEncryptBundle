@@ -8,7 +8,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
 use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
@@ -146,16 +146,21 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     }
 
     /**
-     * Listen to preflush event
+     * Listen to onflush event
      * Encrypt entities that are inserted into the database
      *
-     * @param PreFlushEventArgs $preFlushEventArgs
+     * @param OnFlushEventArgs $onFlushEventArgs
      */
-    public function preFlush(PreFlushEventArgs $preFlushEventArgs)
+    public function onFlush(OnFlushEventArgs $onFlushEventArgs)
     {
-        $unitOfWork = $preFlushEventArgs->getEntityManager()->getUnitOfWork();
+        $unitOfWork = $onFlushEventArgs->getEntityManager()->getUnitOfWork();
         foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
+            $encryptCounterBefore = $this->encryptCounter;
             $this->processFields($entity);
+            if ($this->encryptCounter > $encryptCounterBefore ) {
+                $classMetadata = $onFlushEventArgs->getEntityManager()->getClassMetadata(get_class($entity));
+                $unitOfWork->recomputeSingleEntityChangeSet($classMetadata, $entity);
+            }
         }
     }
 
@@ -186,7 +191,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             Events::postUpdate,
             Events::preUpdate,
             Events::postLoad,
-            Events::preFlush,
+            Events::onFlush,
             Events::postFlush,
         );
     }
