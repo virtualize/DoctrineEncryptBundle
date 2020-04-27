@@ -25,11 +25,6 @@
   "autoload": {
     "psr-0": { "Ambta\\DoctrineEncryptBundle\\": "" }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "Ambta\\DoctrineEncryptBundle\\": ""
-    }
-  },
   "target-dir": "Ambta/DoctrineEncryptBundle",
   "authors": [
     {
