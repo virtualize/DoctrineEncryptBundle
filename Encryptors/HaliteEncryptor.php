@@ -2,7 +2,7 @@
 
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
-use \ParagonIE\Halite\HiddenString;
+use \ParagonIE\HiddenString\HiddenString;
 use \ParagonIE\Halite\KeyFactory;
 
 /**
