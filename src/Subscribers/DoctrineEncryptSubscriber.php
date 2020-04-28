@@ -65,6 +65,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public $encryptCounter = 0;
 
+    /** @var array */
+    private $previouslyDecrypted;
+
     /**
      * Initialization of subscriber
      *
@@ -236,11 +239,15 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                 $this->decryptCounter++;
                                 $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -5));
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                $this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$currentPropValue] = $value;
                             }
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
-                            if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
+                            if ($this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$value]) {
+                                $pac->setValue($entity, $refProperty->getName(), $this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$value]);
+                            } else
+                                if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                 $this->encryptCounter++;
                                 $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
