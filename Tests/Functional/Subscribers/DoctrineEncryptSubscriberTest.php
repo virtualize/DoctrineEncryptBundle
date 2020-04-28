@@ -61,6 +61,8 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $classes    = $this->entityManager->getMetadataFactory()->getAllMetadata();
         $schemaTool->dropSchema($classes);
         $schemaTool->createSchema($classes);
+
+        error_reporting(E_ALL);
     }
 
     public function testEncryptionHappensOnOnlyAnnotatedFields()

@@ -244,7 +244,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
-                            if ($this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$value]) {
+                            if (isset($this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$value])) {
                                 $pac->setValue($entity, $refProperty->getName(), $this->previouslyDecrypted[spl_object_id($entity)][$refProperty->getName()][$value]);
                             } else
                                 if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
