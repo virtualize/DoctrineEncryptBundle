@@ -2,6 +2,7 @@
 
 namespace Ambta\DoctrineEncryptBundle\Subscribers;
 
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use ReflectionClass;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -152,6 +153,22 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Listen to onflush event
      * Encrypt entities that are inserted into the database
      *
+     * @param PreFlushEventArgs $preFlushEventArgs
+     */
+    public function preFlush(PreFlushEventArgs $preFlushEventArgs)
+    {
+        $unitOfWOrk = $preFlushEventArgs->getEntityManager()->getUnitOfWork();
+        foreach ($unitOfWOrk->getIdentityMap() as $item) {
+            foreach ($item as $instance) {
+                $this->processFields($instance);
+            }
+        }
+    }
+
+    /**
+     * Listen to onflush event
+     * Encrypt entities that are inserted into the database
+     *
      * @param OnFlushEventArgs $onFlushEventArgs
      */
     public function onFlush(OnFlushEventArgs $onFlushEventArgs)
@@ -195,6 +212,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             Events::preUpdate,
             Events::postLoad,
             Events::onFlush,
+            Events::preFlush,
             Events::postFlush,
         );
     }

@@ -8,6 +8,7 @@ use Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor;
 use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\Subscribers\Entity\CascadeTarget;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\Setup;
@@ -137,24 +138,36 @@ class DoctrineEncryptSubscriberTest extends TestCase
     }
 
 
+    /**
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @group failing
+     */
     public function testEncryptionDoesNotHappenWhenThereIsNoChange()
     {
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
-        $owner     = new Owner();
-        $owner->setSecret($secret);
-        $owner->setNotSecret($notSecret);
-        $em->persist($owner);
+        $owner1     = new Owner();
+        $owner1->setSecret($secret);
+        $owner1->setNotSecret($notSecret);
+        $em->persist($owner1);
+        $owner2     = new Owner();
+        $owner2->setSecret($secret);
+        $owner2->setNotSecret($notSecret);
+        $em->persist($owner2);
+
         $em->flush();
         $em->clear();
-        $ownerId = $owner->getId();
-        unset($owner);
+        $owner1Id = $owner1->getId();
+        $owner2Id = $owner2->getId();
+        unset($owner1);
+        unset($owner2);
 
         // test that it was encrypted correctly
         $connection = $em->getConnection();
         $stmt       = $connection->prepare('SELECT * from owner WHERE id = ?');
-        $stmt->bindValue(1, $ownerId);
+        $stmt->bindValue(1, $owner1Id);
         $stmt->execute();
         $results = $stmt->fetchAll();
         $this->assertCount(1, $results);
@@ -162,14 +175,24 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $originalEncryption = $result['secret'];
         $this->assertStringEndsWith('<ENC>', $originalEncryption); // is encrypted
 
-        $em->getRepository(Owner::class)->find($ownerId);
+        $owners = $em->getRepository(Owner::class)->findAll();
+        /** @var Owner $owner */
+        foreach ($owners as $owner) {
+            $this->assertEquals($secret, $owner->getSecret());
+            $this->assertEquals($notSecret, $owner->getNotSecret());
+        }
+        $stack = new DebugStack();
+        $connection->getConfiguration()->setSQLLogger($stack);
+        $this->assertCount(0, $stack->queries);
         $beforeFlush = $this->subscriber->encryptCounter;
         $em->flush();
         $afterFlush = $this->subscriber->encryptCounter;
         // No encryption should have happened because we didn't change anything.
         $this->assertEquals($beforeFlush, $afterFlush);
+        // No queries happened because we didn't change anything.
+        $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
 
-        $stmt->bindValue(1, $ownerId);
+        $stmt->bindValue(1, $owner1Id);
         $stmt->execute();
         $results = $stmt->fetchAll();
         $this->assertCount(1, $results);
