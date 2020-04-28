@@ -3,7 +3,7 @@
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
 use ParagonIE\Halite\Alerts\CannotPerformOperation;
-use ParagonIE\Halite\HiddenString;
+use ParagonIE\HiddenString\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use ParagonIE\Halite\Symmetric\Crypto;
 
