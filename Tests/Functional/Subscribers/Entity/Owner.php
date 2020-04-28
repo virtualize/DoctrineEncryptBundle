@@ -22,7 +22,7 @@ class Owner
     private $id;
 
     /**
-     * @\Ambta\DoctrineEncryptBundle\Configuration\Encrypted()
+     * @Ambta\DoctrineEncryptBundle\Configuration\Encrypted()
      * @ORM\Column(type="string", nullable=true)
      */
     private $secret;
