@@ -141,7 +141,6 @@ class DoctrineEncryptSubscriberTest extends TestCase
     /**
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @group failing
      */
     public function testEncryptionDoesNotHappenWhenThereIsNoChange()
     {
@@ -160,7 +159,6 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $em->flush();
         $em->clear();
         $owner1Id = $owner1->getId();
-        $owner2Id = $owner2->getId();
         unset($owner1);
         unset($owner2);
 
@@ -184,6 +182,15 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $stack = new DebugStack();
         $connection->getConfiguration()->setSQLLogger($stack);
         $this->assertCount(0, $stack->queries);
+        $beforeFlush = $this->subscriber->encryptCounter;
+        $em->flush();
+        $afterFlush = $this->subscriber->encryptCounter;
+        // No encryption should have happened because we didn't change anything.
+        $this->assertEquals($beforeFlush, $afterFlush);
+        // No queries happened because we didn't change anything.
+        $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
+
+        // flush again
         $beforeFlush = $this->subscriber->encryptCounter;
         $em->flush();
         $afterFlush = $this->subscriber->encryptCounter;
