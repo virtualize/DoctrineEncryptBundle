@@ -67,7 +67,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     public $encryptCounter = 0;
 
     /** @var array */
-    private $cachedDecryptions;
+    private $cachedDecryptions = [];
 
     /**
      * Initialization of subscriber
@@ -165,6 +165,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                 }
             }
         }
+        $this->cachedDecryptions = [];
     }
 
     /**
