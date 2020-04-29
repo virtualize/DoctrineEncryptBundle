@@ -6,7 +6,6 @@
   "description": "Encrypted symfony entity's by verified and standardized libraries",
   "require": {
     "php": "^7.2",
-    "ext-sodium": "*",
     "paragonie/halite": "^4.6",
     "doctrine/orm": "^2.5",
     "symfony/property-access": "^4.1",
@@ -17,7 +16,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^6.5",
-    "defuse/php-encryption": "^2.1"
+    "defuse/php-encryption": "^2.1",
+    "ext-sodium": "*"
   },
   "suggest": {
     "defuse/php-encryption": "Alternative for halite for use with older php-versions"
