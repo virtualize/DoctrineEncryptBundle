@@ -68,6 +68,9 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
     public function testEncryptionHappensOnOnlyAnnotatedFields()
     {
+        if (! extension_loaded('sodium')) {
+            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
+        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
@@ -101,6 +104,9 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
     public function testEncryptionCascades()
     {
+        if (! extension_loaded('sodium')) {
+            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
+        }
         $secret        = "It's a secret";
         $notSecret     = "You're all welcome to know this.";
         $em            = $this->entityManager;
@@ -144,6 +150,9 @@ class DoctrineEncryptSubscriberTest extends TestCase
      */
     public function testEncryptionDoesNotHappenWhenThereIsNoChange()
     {
+        if (! extension_loaded('sodium')) {
+            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
+        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
@@ -212,6 +221,9 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
     public function testEncryptionDoesHappenWhenASecretIsChanged()
     {
+        if (! extension_loaded('sodium')) {
+            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
+        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;

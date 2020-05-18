@@ -10,6 +10,9 @@ matrix:
       # Minimum supported versions
     - php: 7.2
       env: COMPOSER_FLAGS="--prefer-lowest"
+      ## with sodium extension installed.
+    - php: 7.2
+      env: COMPOSER_FLAGS="--prefer-lowest"
       before_install:
         - sudo add-apt-repository ppa:ondrej/php -y
         - sudo apt-get -qq update
