@@ -4,7 +4,7 @@ There is only 1 paramater in the configuration of the Doctrine encryption bundle
 This parameter is also optional.
 
 * **encryptor_class** - Custom class for encrypting data
-    * Encryptor class, [your own encryptor class](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/custom_encryptor.md) will override encryptor paramater
+    * Encryptor class, [your own encryptor class](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/src/Resources/doc/custom_encryptor.md) will override encryptor paramater
     * Default: Halite
 
 ## yaml
@@ -24,4 +24,4 @@ composer require "defuse/php-encryption ^2.0"
 ## Usage
 
 Read how to use the database encryption bundle in your project.
-#### [Usage](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/Resources/doc/usage.md)
+#### [Usage](https://github.com/michaeldegroot/DoctrineEncryptBundle/blob/master/src/Resources/doc/usage.md)
