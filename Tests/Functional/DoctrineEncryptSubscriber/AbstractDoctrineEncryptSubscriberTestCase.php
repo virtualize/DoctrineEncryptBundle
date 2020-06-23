@@ -1,76 +1,18 @@
 <?php
 
 
-namespace Ambta\DoctrineEncryptBundle\Tests\Functional\Subscribers;
+namespace Ambta\DoctrineEncryptBundle\Tests\Functional\DoctrineEncryptSubscriber;
 
-
-use Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor;
-use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
-use Ambta\DoctrineEncryptBundle\Tests\Functional\Subscribers\Entity\CascadeTarget;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Ambta\DoctrineEncryptBundle\Tests\Functional\AbstractFunctionalTestCase;
+use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\CascadeTarget;
+use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\Owner;
 use Doctrine\DBAL\Logging\DebugStack;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\Setup;
-use PHPUnit\Framework\TestCase;
-use Ambta\DoctrineEncryptBundle\Tests\Functional\Subscribers\Entity\Owner;
 
-/**
- * @property EntityManager entityManager
- * @property false|string dbFile
- * @property DoctrineEncryptSubscriber subscriber
- * @property HaliteEncryptor encryptor
- */
-class DoctrineEncryptSubscriberTest extends TestCase
+
+abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctionalTestCase
 {
-
-
-    public function setUp()
-    {
-        // Create a simple "default" Doctrine ORM configuration for Annotations
-        $isDevMode                 = true;
-        $proxyDir                  = null;
-        $cache                     = null;
-        $useSimpleAnnotationReader = false;
-
-        $config = Setup::createAnnotationMetadataConfiguration(
-            array(__DIR__ . "/Entity"),
-            $isDevMode,
-            $proxyDir,
-            $cache,
-            $useSimpleAnnotationReader
-        );
-
-        // database configuration parameters
-        $this->dbFile = tempnam(sys_get_temp_dir(), 'amb_db');
-        $conn = array(
-            'driver' => 'pdo_sqlite',
-            'path'   => $this->dbFile,
-        );
-
-        // obtaining the entity manager
-        $this->entityManager = EntityManager::create($conn, $config);
-
-        $reader = new AnnotationReader();
-        $keyfile = __DIR__.'/fixtures/halite.key';
-        $this->encryptor = new HaliteEncryptor($keyfile);
-
-        $this->subscriber = new DoctrineEncryptSubscriber($reader, $this->encryptor);
-        $this->entityManager->getEventManager()->addEventSubscriber($this->subscriber);
-
-        $schemaTool = new SchemaTool($this->entityManager);
-        $classes    = $this->entityManager->getMetadataFactory()->getAllMetadata();
-        $schemaTool->dropSchema($classes);
-        $schemaTool->createSchema($classes);
-
-        error_reporting(E_ALL);
-    }
-
     public function testEncryptionHappensOnOnlyAnnotatedFields()
     {
-        if (! extension_loaded('sodium')) {
-            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
-        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
@@ -104,9 +46,6 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
     public function testEncryptionCascades()
     {
-        if (! extension_loaded('sodium')) {
-            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
-        }
         $secret        = "It's a secret";
         $notSecret     = "You're all welcome to know this.";
         $em            = $this->entityManager;
@@ -150,9 +89,6 @@ class DoctrineEncryptSubscriberTest extends TestCase
      */
     public function testEncryptionDoesNotHappenWhenThereIsNoChange()
     {
-        if (! extension_loaded('sodium')) {
-            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
-        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
@@ -221,9 +157,6 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
     public function testEncryptionDoesHappenWhenASecretIsChanged()
     {
-        if (! extension_loaded('sodium')) {
-            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
-        }
         $secret    = "It's a secret";
         $notSecret = "You're all welcome to know this.";
         $em        = $this->entityManager;
@@ -264,12 +197,5 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $shouldBeDifferentFromBefore = $result['secret'];
         $this->assertStringEndsWith('<ENC>', $shouldBeDifferentFromBefore); // is encrypted
         $this->assertNotEquals($originalEncryption, $shouldBeDifferentFromBefore);
-
-    }
-
-
-    public function tearDown()
-    {
-        unlink($this->dbFile);
     }
 }

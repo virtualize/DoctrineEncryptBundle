@@ -1,7 +1,6 @@
 <?php
 
-
-namespace Ambta\DoctrineEncryptBundle\Tests\Functional\Subscribers\Entity;
+namespace Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
