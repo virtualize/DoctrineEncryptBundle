@@ -4,9 +4,8 @@ namespace Ambta\DoctrineEncryptBundle\Tests\Functional\DoctrineEncryptSubscriber
 
 use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor;
-use Ambta\DoctrineEncryptBundle\Tests\Functional\BasicQueryTest\AbstractBasicQueryTestCase;
 
-class DoctrineEncryptSubscriberHaliteTestCase extends AbstractDoctrineEncryptSubscriberTestCase
+class DoctrineEncryptSubscriberHaliteTest extends AbstractDoctrineEncryptSubscriberTestCase
 {
     protected function getEncryptor(): EncryptorInterface
     {

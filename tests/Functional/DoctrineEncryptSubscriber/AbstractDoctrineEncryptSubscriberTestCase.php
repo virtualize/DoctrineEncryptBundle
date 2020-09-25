@@ -33,8 +33,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertEquals($secret, $owner->getSecret());
         $this->assertEquals($notSecret, $owner->getNotSecret());
         $stmt->bindValue(1, $owner->getId());
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $this->assertEquals($notSecret, $result['notSecret']);
@@ -71,8 +70,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertEquals($secret, $cascadeTarget->getSecret());
         $this->assertEquals($notSecret, $cascadeTarget->getNotSecret());
         $stmt->bindValue(1, $cascadeTarget->getId());
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $this->assertEquals($notSecret, $result['notSecret']);
@@ -111,8 +109,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmt       = $connection->prepare('SELECT * from owner WHERE id = ?');
         $stmt->bindValue(1, $owner1Id);
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $originalEncryption = $result['secret'];
@@ -145,8 +142,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
 
         $stmt->bindValue(1, $owner1Id);
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $shouldBeTheSameAsBefore = $result['secret'];
@@ -173,8 +169,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmt       = $connection->prepare('SELECT * from owner WHERE id = ?');
         $stmt->bindValue(1, $ownerId);
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $originalEncryption = $result['secret'];
@@ -190,8 +185,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertGreaterThan($beforeFlush, $afterFlush);
 
         $stmt->bindValue(1, $ownerId);
-        $stmt->execute();
-        $results = $stmt->fetchAll();
+        $results = $stmt->executeQuery()->fetchAllAssociative();
         $this->assertCount(1, $results);
         $result = $results[0];
         $shouldBeDifferentFromBefore = $result['secret'];
