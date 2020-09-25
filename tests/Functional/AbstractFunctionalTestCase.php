@@ -90,11 +90,11 @@ abstract class AbstractFunctionalTestCase extends TestCase
 
     protected function getLatestUpdateQuery(): ?array
     {
-        $insertQueries = array_values(array_filter($this->sqlLoggerStack->queries,static function ($queryData) {
+        $updateQueries = array_values(array_filter($this->sqlLoggerStack->queries,static function ($queryData) {
             return stripos($queryData['sql'], 'UPDATE ') === 0;
         }));
 
-        return current(array_reverse($insertQueries)) ?: null;
+        return current(array_reverse($updateQueries)) ?: null;
     }
 
     /**
@@ -103,6 +103,11 @@ abstract class AbstractFunctionalTestCase extends TestCase
     protected function getCurrentQueryCount(): int
     {
         return count($this->sqlLoggerStack->queries);
+    }
+
+    protected function resetQueryStack(): void
+    {
+        $this->sqlLoggerStack->queries = [];
     }
 
     /**
