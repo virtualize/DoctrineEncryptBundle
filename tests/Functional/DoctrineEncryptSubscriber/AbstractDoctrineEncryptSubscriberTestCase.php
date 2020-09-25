@@ -5,6 +5,8 @@ namespace Ambta\DoctrineEncryptBundle\Tests\Functional\DoctrineEncryptSubscriber
 
 use Ambta\DoctrineEncryptBundle\Tests\Functional\AbstractFunctionalTestCase;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\CascadeTarget;
+use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\ClassTableInheritanceBase;
+use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\ClassTableInheritanceChild;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\Owner;
 use Doctrine\DBAL\Logging\DebugStack;
 
@@ -80,11 +82,58 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertEquals($secret, $decrypted);
     }
 
+    public function testEncryptionClassTableInheritance(): void
+    {
+        $secretBase     = "It's a secret. On the base class.";
+        $notSecretBase  = "You're all welcome to know this.  On the base class.";
+        $secretChild    = "It's a secret. On the child class.";
+        $notSecretChild = "You're all welcome to know this. On the child class.";
+        $em             = $this->entityManager;
+        $child          = new ClassTableInheritanceChild();
+        $child->setSecretBase($secretBase);
+        $child->setNotSecretBase($notSecretBase);
+        $child->setSecretChild($secretChild);
+        $child->setNotSecretChild($notSecretChild);
+        $em->persist($child);
+        $em->flush();
+        $em->clear();
+        unset($child);
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
+        $connection = $em->getConnection();
+        $stmtBase   = $connection->prepare('SELECT * from classTableInheritanceBase WHERE id = ?');
+        $stmtChild  = $connection->prepare('SELECT * from classTableInheritanceChild WHERE id = ?');
+        $childs      = $em->getRepository(ClassTableInheritanceBase::class)->findAll();
+        self::assertCount(1, $childs);
+        /** @var ClassTableInheritanceChild $child */
+        $child = $childs[0];
+        self::assertEquals($secretBase, $child->getSecretBase());
+        self::assertEquals($notSecretBase, $child->getNotSecretBase());
+        self::assertEquals($secretChild, $child->getSecretChild());
+        self::assertEquals($notSecretChild, $child->getNotSecretChild());
+
+        // Now check that the fields are encrypted in the database. First the base table.
+        $stmtBase->bindValue(1, $child->getId());
+        $results = $stmtBase->executeQuery()->fetchAllAssociative();
+        self::assertCount(1, $results);
+        $result = $results[0];
+        self::assertEquals($notSecretBase, $result['notSecretBase']);
+        self::assertNotEquals($secretBase, $result['secretBase']);
+        self::assertStringEndsWith('<ENC>', $result['secretBase']);
+        $decrypted = $this->encryptor->decrypt(str_replace('<ENC>', '', $result['secretBase']));
+        self::assertEquals($secretBase, $decrypted);
+
+        // and then the child table.
+        $stmtChild->bindValue(1, $child->getId());
+        $results = $stmtChild->executeQuery()->fetchAllAssociative();
+        self::assertCount(1, $results);
+        $result = $results[0];
+        self::assertEquals($notSecretChild, $result['notSecretChild']);
+        self::assertNotEquals($secretChild, $result['secretChild']);
+        self::assertStringEndsWith('<ENC>', $result['secretChild']);
+        $decrypted = $this->encryptor->decrypt(str_replace('<ENC>', '', $result['secretChild']));
+        self::assertEquals($secretChild, $decrypted);
+    }
+
     public function testEncryptionDoesNotHappenWhenThereIsNoChange(): void
     {
         $secret    = "It's a secret";
@@ -149,6 +198,81 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertStringEndsWith('<ENC>', $shouldBeTheSameAsBefore); // is encrypted
         $this->assertEquals($originalEncryption, $shouldBeTheSameAsBefore);
 
+    }
+
+    public function testEncryptionDoesNotHappenWhenThereIsNoChangeClassInheritance(): void
+    {
+        $secretBase     = "It's a secret. On the base class.";
+        $notSecretBase  = "You're all welcome to know this.  On the base class.";
+        $secretChild    = "It's a secret. On the child class.";
+        $notSecretChild = "You're all welcome to know this. On the child class.";
+        $em             = $this->entityManager;
+        $child          = new ClassTableInheritanceChild();
+        $child->setSecretBase($secretBase);
+        $child->setNotSecretBase($notSecretBase);
+        $child->setSecretChild($secretChild);
+        $child->setNotSecretChild($notSecretChild);
+        $em->persist($child);
+        $em->flush();
+        $em->clear();
+        $childId = $child->getId();
+        unset($child);
+
+
+        // test that it was encrypted correctly
+        $connection = $em->getConnection();
+        $stmtBase   = $connection->prepare('SELECT * from classTableInheritanceBase WHERE id = ?');
+        $stmtBase->bindValue(1, $childId);
+        $result = $stmtBase->executeQuery()->fetchAssociative();
+        $originalEncryptionBase = $result['secretBase'];
+        self::assertStringEndsWith('<ENC>', $originalEncryptionBase); // is encrypted
+
+        // do the same for the child.
+        $connection = $em->getConnection();
+        $stmtChild   = $connection->prepare('SELECT * from classTableInheritanceChild WHERE id = ?');
+        $stmtChild->bindValue(1, $childId);
+        $result = $stmtChild->executeQuery()->fetchAssociative();
+        $originalEncryptionChild = $result['secretChild'];
+        self::assertStringEndsWith('<ENC>', $originalEncryptionChild); // is encrypted
+
+        $childs = $em->getRepository(ClassTableInheritanceChild::class)->findAll();
+        $child = $childs[0];
+        self::assertEquals($secretBase, $child->getSecretBase());
+        self::assertEquals($notSecretBase, $child->getNotSecretBase());
+        self::assertEquals($secretChild, $child->getSecretChild());
+        self::assertEquals($notSecretChild, $child->getNotSecretChild());
+
+        $stack = new DebugStack();
+        $connection->getConfiguration()->setSQLLogger($stack);
+        self::assertCount(0, $stack->queries);
+        $beforeFlush = $this->subscriber->encryptCounter;
+        $em->flush();
+        $afterFlush = $this->subscriber->encryptCounter;
+        // No encryption should have happened because we didn't change anything.
+        self::assertEquals($beforeFlush, $afterFlush);
+        // No queries happened because we didn't change anything.
+        self::assertCount(0, $stack->queries, "Unexpected queries:\n" . var_export($stack->queries, true));
+
+        // flush again
+        $beforeFlush = $this->subscriber->encryptCounter;
+        $em->flush();
+        $afterFlush = $this->subscriber->encryptCounter;
+        // No encryption should have happened because we didn't change anything.
+        self::assertEquals($beforeFlush, $afterFlush);
+        // No queries happened because we didn't change anything.
+        self::assertCount(0, $stack->queries, "Unexpected queries:\n" . var_export($stack->queries, true));
+
+        $stmtBase->bindValue(1, $childId);
+        $result = $stmtBase->executeQuery()->fetchAssociative();
+        $shouldBeTheSameAsBeforeBase = $result['secretBase'];
+        self::assertStringEndsWith('<ENC>', $shouldBeTheSameAsBeforeBase); // is encrypted
+        self::assertEquals($originalEncryptionBase, $shouldBeTheSameAsBeforeBase);
+
+        $stmtChild->bindValue(1, $childId);
+        $result = $stmtChild->executeQuery()->fetchAssociative();
+        $shouldBeTheSameAsBeforeChild = $result['secretChild'];
+        self::assertStringEndsWith('<ENC>', $shouldBeTheSameAsBeforeChild); // is encrypted
+        self::assertEquals($originalEncryptionChild, $shouldBeTheSameAsBeforeChild);
     }
 
     public function testEncryptionDoesHappenWhenASecretIsChanged(): void
