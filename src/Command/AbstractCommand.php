@@ -18,17 +18,17 @@ abstract class AbstractCommand extends Command
     /**
      * @var EntityManagerInterface
      */
-    protected $entityManager;
+    protected EntityManagerInterface|EntityManager $entityManager;
 
     /**
      * @var DoctrineEncryptSubscriber
      */
-    protected $subscriber;
+    protected DoctrineEncryptSubscriber $subscriber;
 
     /**
      * @var Reader
      */
-    protected $annotationReader;
+    protected Reader $annotationReader;
 
     /**
      * AbstractCommand constructor.

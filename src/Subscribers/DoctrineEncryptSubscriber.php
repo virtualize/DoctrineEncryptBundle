@@ -40,34 +40,34 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Encryptor
      * @var EncryptorInterface
      */
-    private $encryptor;
+    private EncryptorInterface $encryptor;
 
     /**
      * Annotation reader
      * @var Reader
      */
-    private $annReader;
+    private Reader $annReader;
 
     /**
      * Used for restoring the encryptor after changing it
-     * @var string
+     * @var EncryptorInterface|string
      */
-    private $restoreEncryptor;
+    private EncryptorInterface|string $restoreEncryptor;
 
     /**
      * Count amount of decrypted values in this service
      * @var integer
      */
-    public $decryptCounter = 0;
+    public int $decryptCounter = 0;
 
     /**
      * Count amount of encrypted values in this service
      * @var integer
      */
-    public $encryptCounter = 0;
+    public int $encryptCounter = 0;
 
     /** @var array */
-    private $cachedDecryptions = [];
+    private array $cachedDecryptions = [];
 
     /**
      * Initialization of subscriber
