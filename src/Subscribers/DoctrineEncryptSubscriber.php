@@ -73,7 +73,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Initialization of subscriber
      *
      * @param Reader $annReader
-     * @param EncryptorInterface|NULL $encryptor (Optional)  An EncryptorInterface.
+     * @param EncryptorInterface $encryptor (Optional)  An EncryptorInterface.
      */
     public function __construct(Reader $annReader, EncryptorInterface $encryptor)
     {
@@ -95,7 +95,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Get the current encryptor
      *
-     * @return EncryptorInterface returns the encryptor class or null
+     * @return EncryptorInterface|null returns the encryptor class or null
      */
     public function getEncryptor(): ?EncryptorInterface
     {
