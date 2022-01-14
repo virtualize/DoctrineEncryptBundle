@@ -21,7 +21,7 @@ use ReflectionClass;
 final class AttributeReader
 {
     /** @var array */
-    private $isRepeatableAttribute = [];
+    private array $isRepeatableAttribute = [];
 
     /**
      * @param ReflectionClass $class
