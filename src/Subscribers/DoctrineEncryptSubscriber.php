@@ -44,7 +44,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Annotation reader
-     * @var \Doctrine\Common\Annotations\Reader
+     * @var Reader
      */
     private $annReader;
 
