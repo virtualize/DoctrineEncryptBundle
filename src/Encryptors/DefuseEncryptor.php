@@ -28,7 +28,7 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function encrypt($data)
+    public function encrypt(string $data): string
     {
         return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->getKey());
     }
@@ -36,12 +36,12 @@ class DefuseEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function decrypt($data)
+    public function decrypt(string $data): string
     {
         return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->getKey());
     }
 
-    private function getKey()
+    private function getKey(): string
     {
         if ($this->encryptionKey === null) {
             if ($this->fs->exists($this->keyFile)) {

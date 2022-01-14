@@ -85,7 +85,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Change the encryptor
      *
-     * @param EncryptorInterface $encryptor
+     * @param EncryptorInterface|null $encryptor
      */
     public function setEncryptor(EncryptorInterface $encryptor = null)
     {
@@ -97,7 +97,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @return EncryptorInterface returns the encryptor class or null
      */
-    public function getEncryptor()
+    public function getEncryptor(): ?EncryptorInterface
     {
         return $this->encryptor;
     }
@@ -208,7 +208,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @return array Return all events which this subscriber is listening
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return array(
             Events::postUpdate,
@@ -226,11 +226,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @param Object $entity doctrine entity
      * @param Boolean $isEncryptOperation If true - encrypt, false - decrypt entity
      *
-     * @throws \RuntimeException
-     *
      * @return object|null
+     *@throws \RuntimeException
+     *
      */
-    public function processFields($entity, $isEncryptOperation = true)
+    public function processFields(object $entity, bool $isEncryptOperation = true): ?object
     {
         if (!empty($this->encryptor)) {
             // Check which operation to be used
@@ -304,7 +304,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @return array
      */
-    private function getClassProperties($className)
+    private function getClassProperties(string $className): array
     {
         $reflectionClass = new ReflectionClass($className);
         $properties      = $reflectionClass->getProperties();
