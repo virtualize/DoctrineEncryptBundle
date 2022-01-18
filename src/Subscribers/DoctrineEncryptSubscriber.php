@@ -38,9 +38,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Encryptor
-     * @var EncryptorInterface
+     * @var EncryptorInterface|null
      */
-    private EncryptorInterface $encryptor;
+    private ?EncryptorInterface $encryptor;
 
     /**
      * Annotation reader
@@ -87,7 +87,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param EncryptorInterface|null $encryptor
      */
-    public function setEncryptor(EncryptorInterface $encryptor = null)
+    public function setEncryptor(?EncryptorInterface $encryptor = null)
     {
         $this->encryptor = $encryptor;
     }
