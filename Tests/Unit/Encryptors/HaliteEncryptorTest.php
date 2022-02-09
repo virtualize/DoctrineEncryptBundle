@@ -11,7 +11,7 @@ class HaliteEncryptorTest extends TestCase
 
     public function testEncryptExtension(): void
     {
-        if (! extension_loaded('sodium')) {
+        if (! extension_loaded('sodium') && !class_exists('ParagonIE_Sodium_Compat')) {
             $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
         }
         $keyfile = __DIR__.'/fixtures/halite.key';
@@ -29,7 +29,7 @@ class HaliteEncryptorTest extends TestCase
 
     public function testGenerateKey(): void
     {
-        if (! extension_loaded('sodium')) {
+        if (! extension_loaded('sodium') && !class_exists('ParagonIE_Sodium_Compat')) {
             $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
         }
         $keyfile = sys_get_temp_dir().'/halite-'.md5(time());
@@ -44,18 +44,4 @@ class HaliteEncryptorTest extends TestCase
 
         unlink($keyfile);
     }
-
-
-    public function testEncryptWithoutExtensionThrowsException(): void
-    {
-        if (extension_loaded('sodium')) {
-            $this->markTestSkipped('This only runs when the sodium extension is disabled.');
-        }
-        $keyfile = __DIR__.'/fixtures/halite.key';
-        $halite = new HaliteEncryptor($keyfile);
-
-        $this->expectException(\SodiumException::class);
-        $halite->encrypt(self::DATA);
-    }
-
 }
