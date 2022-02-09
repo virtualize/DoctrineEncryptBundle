@@ -18,7 +18,8 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^8.0|^9.0",
-		"defuse/php-encryption": "^2.1"
+		"defuse/php-encryption": "^2.1",
+		"doctrine/cache": "^1.11"
 	},
 	"suggest": {
 		"defuse/php-encryption": "Alternative for halite for use with older php-versions",
