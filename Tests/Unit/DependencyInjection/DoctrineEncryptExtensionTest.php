@@ -49,8 +49,6 @@ class DoctrineEncryptExtensionTest extends TestCase
         ];
         $this->extension->load([$config], $container);
 
-        $this->markTestSkipped();
-
         $this->assertSame(self::class, $container->getParameter('ambta_doctrine_encrypt.encryptor_class_name'));
     }
 
