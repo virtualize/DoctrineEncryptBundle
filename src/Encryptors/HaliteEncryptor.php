@@ -16,8 +16,10 @@ use ParagonIE\Halite\Symmetric\Crypto;
 
 class HaliteEncryptor implements EncryptorInterface
 {
-    private ?EncryptionKey $encryptionKey = null;
-    private string $keyFile;
+    /** @var EncryptionKey|null  */
+    private $encryptionKey = null;
+    /** @var string */
+    private $keyFile;
 
     /**
      * {@inheritdoc}
