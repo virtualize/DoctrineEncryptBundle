@@ -5,11 +5,11 @@ namespace App\Repository;
 use App\Entity\Secret;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-// Alias is needed because of test with both php 7.2 and php 7.4
+// Alias is needed because of test with both php 7.2, 7.4 and 8.0
 if (!interface_exists('\Doctrine\Common\Persistence\ManagerRegistry')) {
     class_alias(
-        '\Doctrine\Common\Persistence\ManagerRegistry',
-        '\Doctrine\Persistence\ManagerRegistry'
+        '\Doctrine\Persistence\ManagerRegistry',
+        '\Doctrine\Common\Persistence\ManagerRegistry'
     );
 }
 

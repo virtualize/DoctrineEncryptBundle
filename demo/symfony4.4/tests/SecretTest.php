@@ -15,6 +15,10 @@ class SecretTest extends KernelTestCase
         self::bootKernel([]);
     }
 
+    /**
+     * @covers Secret::getSecret
+     * @covers Secret::getName
+     */
     public function testSecretsAreEncryptedInDatabase()
     {
         /** @var EntityManagerInterface $entityManager */
@@ -34,12 +38,8 @@ class SecretTest extends KernelTestCase
         $entityManager->persist($secret);
         $entityManager->flush();
 
-
+        // Fetch the actual data
         $secretRepository = $entityManager->getRepository(Secret::class);
-
-
-
-
         $qb = $secretRepository->createQueryBuilder('s');
         $qb->select('s')
             ->addSelect('(s.secret) as rawSecret')
@@ -50,7 +50,7 @@ class SecretTest extends KernelTestCase
 
         $actualSecretObject = $result[0];
         $actualRawSecret = $result['rawSecret'];
-
+        
         self::assertEquals($secret->getSecret(), $actualSecretObject->getSecret());
         self::assertEquals($secret->getName(), $actualSecretObject->getName());
         // Make sure it is encrypted
