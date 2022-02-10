@@ -1,0 +1,7 @@
+# See https://php.watch/articles/composer-gitattributes
+/demo              export-ignore
+/tests             export-ignore
+
+/.travis.yml       export-ignore
+/phpstan.neon.dist export-ignore
+/phpunit.xml.dist  export-ignore
