@@ -68,5 +68,8 @@
             "type": "path",
             "url": "../../"
         }
-    ]
+    ],
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.0"
+    }
 }
