@@ -33,7 +33,7 @@ class DoctrineEncryptStatusCommand extends AbstractCommand
 
         $totalCount = 0;
         foreach ($metaDataArray as $metaData) {
-            if ($metaData instanceof ClassMetadataInfo  and $metaData->isMappedSuperclass) {
+            if ($metaData instanceof ClassMetadataInfo && $metaData->isMappedSuperclass) {
                 continue;
             }
 
