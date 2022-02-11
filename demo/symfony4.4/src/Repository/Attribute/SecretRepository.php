@@ -3,7 +3,7 @@
 namespace App\Repository\Attribute;
 
 use App\Entity\Attribute\Secret;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Repository\AbstractSecretRepository;
 
 // Alias is needed because of test with both php 7.2, 7.4 and 8.0
 if (!interface_exists('\Doctrine\Common\Persistence\ManagerRegistry')) {
@@ -20,30 +20,11 @@ if (PHP_VERSION_ID >= 80000) {
      * @method Secret|null findOneBy(array $criteria, array $orderBy = null)
      * @method Secret[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
      */
-    class SecretRepository extends ServiceEntityRepository
+    class SecretRepository extends AbstractSecretRepository
     {
-
         public function __construct(\Doctrine\Common\Persistence\ManagerRegistry $registry)
         {
             parent::__construct($registry, Secret::class);
-        }
-
-        public function findAll()
-        {
-            $qb = $this->createQueryBuilder('s');
-            $qb->select('s')
-                ->addSelect('(s.secret) as rawSecret')
-                ->orderBy('s.name', 'ASC');
-            $rawResult = $qb->getQuery()->getResult();
-
-            $result = [];
-            foreach ($rawResult as $row) {
-                $secret = $row[0];
-                $secret->setRawSecret($row['rawSecret']);
-                $result[] = $secret;
-            }
-
-            return $result;
         }
     }
 } else {
