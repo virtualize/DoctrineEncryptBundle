@@ -31,9 +31,15 @@
     <body>
     <h1>Hello World!</h1>
     <table>
-        <tr><th>Name</th><th>Secret</th><th>Raw Secret (as stored in DB)</th></tr>
+        <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>Secret</th>
+            <th>Raw Secret (as stored in DB)</th>
+        </tr>
         {% for secret in secrets %}
             <tr>
+                <td>{{ secret.type }}</td>
                 <td>{{ secret.name }}</td>
                 <td>{{ secret.secret }}</td>
                 <td>{{ secret.rawSecret }}</td>

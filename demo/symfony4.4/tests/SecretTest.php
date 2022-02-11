@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-use App\Entity\Secret;
+use App\Entity;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -15,11 +15,7 @@ class SecretTest extends KernelTestCase
         self::bootKernel([]);
     }
 
-    /**
-     * @covers Secret::getSecret
-     * @covers Secret::getName
-     */
-    public function testSecretsAreEncryptedInDatabase()
+    private function testSecretsAreEncryptedInDatabase(string $className)
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get('doctrine.orm.entity_manager');
@@ -31,15 +27,15 @@ class SecretTest extends KernelTestCase
         $secretString = 'i am a secret string';
 
         // Create entity to test with
-        $secret = (new Secret())
+        $newSecretObject = (new $className)
             ->setName($name)
             ->setSecret($secretString);
 
-        $entityManager->persist($secret);
+        $entityManager->persist($newSecretObject);
         $entityManager->flush();
 
         // Fetch the actual data
-        $secretRepository = $entityManager->getRepository(Secret::class);
+        $secretRepository = $entityManager->getRepository($className);
         $qb = $secretRepository->createQueryBuilder('s');
         $qb->select('s')
             ->addSelect('(s.secret) as rawSecret')
@@ -50,10 +46,30 @@ class SecretTest extends KernelTestCase
 
         $actualSecretObject = $result[0];
         $actualRawSecret = $result['rawSecret'];
-        
-        self::assertEquals($secret->getSecret(), $actualSecretObject->getSecret());
-        self::assertEquals($secret->getName(), $actualSecretObject->getName());
+
+        self::assertInstanceOf($className,$actualSecretObject);
+        self::assertEquals($newSecretObject->getSecret(), $actualSecretObject->getSecret());
+        self::assertEquals($newSecretObject->getName(), $actualSecretObject->getName());
         // Make sure it is encrypted
-        self::assertNotEquals($secret->getSecret(),$actualRawSecret);
+        self::assertNotEquals($newSecretObject->getSecret(),$actualRawSecret);
+    }
+
+    /**
+     * @covers Entity\Annotation\Secret::getSecret
+     * @covers Entity\AnnotationSecret::getName
+     */
+    public function testAnnotationSecretsAreEncryptedInDatabase()
+    {
+        $this->testSecretsAreEncryptedInDatabase(Entity\Annotation\Secret::class);
+    }
+
+    /**
+     * @covers Entity\Attribute\Secret::getSecret
+     * @covers Entity\Attribute\Secret::getName
+     * @requires PHP 8.0
+     */
+    public function testAttributeSecretsAreEncryptedInDatabase()
+    {
+        $this->testSecretsAreEncryptedInDatabase(Entity\Attribute\Secret::class);
     }
 }

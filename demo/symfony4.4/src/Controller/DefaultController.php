@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Secret;
-use App\Repository\SecretRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +14,13 @@ class DefaultController extends AbstractController
     /**
      * @Route(name="home", path="/")
      */
-    public function index(SecretRepository $secretRepository): Response
+    public function index(\App\Repository\Annotation\SecretRepository $secretUsingAnnotationRepository,
+                          \App\Repository\Attribute\SecretRepository  $secretUsingAttributesRepository): Response
     {
-        $secrets = $secretRepository->findAll();
+        $secrets = array_merge(
+            $secretUsingAnnotationRepository->findAll(),
+            $secretUsingAttributesRepository->findAll()
+        );
 
         return $this->render('index.html.twig',['secrets' => $secrets]);
     }
@@ -27,11 +30,18 @@ class DefaultController extends AbstractController
      */
     public function create(Request $request, EntityManagerInterface $em): Response
     {
-        if (!$request->query->has('name') || !$request->query->has('secret')) {
-            return new Response('Please specify name and secret in url-query');
+        if (!$request->query->has('name') || !$request->query->has('secret') || !$request->query->has('type')) {
+            return new Response('Please specify name, secret and type in url-query');
         }
 
-        $secret = new Secret();
+        $type = $request->query->get('type');
+        if ($type === 'annotation') {
+            $secret = new \App\Entity\Annotation\Secret();
+        } elseif($type === 'attribute') {
+            $secret = new \App\Entity\Attribute\Secret();
+        } else {
+            return new Response('Type is only allowed to be "annotation" or "attribute"');
+        }
 
         $secret
             ->setName($request->query->getAlnum('name'))

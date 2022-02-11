@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Annotation;
 
-use App\Entity\Secret;
+use App\Entity\Annotation\Secret;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 // Alias is needed because of test with both php 7.2, 7.4 and 8.0

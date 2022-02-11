@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\Annotation;
 
 use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\SecretRepository;
+use App\Repository\Annotation\SecretRepository;
 
 /**
- * @ORM\Table(name="secrets")
+ * @ORM\Table(name="secrets_using_annotations")
  * @ORM\Entity(repositoryClass=SecretRepository::class)
  */
-class Secret
+class Secret implements \App\Entity\SecretInterface
 {
     /**
      * @ORM\Id()
@@ -30,6 +30,11 @@ class Secret
      * @var string
      */
     private $rawSecret;
+
+    public function getType()
+    {
+        return 'Annotation';
+    }
 
     /**
      * @return mixed

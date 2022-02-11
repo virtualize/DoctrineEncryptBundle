@@ -41,6 +41,10 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{packages}/'.$this->environment.'/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
+
+        if (PHP_VERSION_ID >= 80000) {
+            $loader->load($confDir.'/{packages}/php8/*'.self::CONFIG_EXTS, 'glob');
+        }
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes): void
