@@ -10,7 +10,7 @@ on:
 
 jobs:
   tests:
-    name: "Tests ${{ matrix.php-version }} ${{ matrix.dependency-versions }} deps ${{ matrix.dependency-versions }}"
+    name: "Tests ${{ matrix.php-version }} ${{ matrix.dependency-versions }}"
     runs-on: ubuntu-18.04
 
     strategy:
@@ -25,11 +25,6 @@ jobs:
           - php-version: '7.2.5'
             dependency-versions: 'lowest'
             composer-options: '--prefer-lowest'
-
-          # testing dev versions with highest PHP
-          - php-version: '8.1'
-            dependency-versions: 'highest'
-            composer-options: '' # allow dev deps
 
     steps:
       - name: "Checkout code"
