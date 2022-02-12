@@ -50,7 +50,7 @@ jobs:
 #          composer global require --no-progress --no-scripts --no-plugins symfony/flex >=1.x
  
       - name: "Composer install"
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
@@ -59,7 +59,7 @@ jobs:
         run: vendor/bin/phpunit
 
       - name: Demo symfony4.4 - Install  dependencies
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
@@ -69,7 +69,7 @@ jobs:
         run: demo/symfony4.4/vendor/bin/simple-phpunit -c demo/symfony4.4/phpunit.xml.dist
 
       - name: Demo symfony6.x - Install  dependencies
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v2"
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
