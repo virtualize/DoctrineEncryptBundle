@@ -16,20 +16,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # normal, highest, non-dev installs
-        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1']
-        composer-options: ['--prefer-stable']
-        dependency-versions: ['highest']
-        include:
-          # testing lowest PHP version with lowest dependencies
-          - php-version: '7.2.5'
-            dependency-versions: 'lowest'
-            composer-options: '--prefer-lowest'
+         php-version: ['7.2']
+         composer-options: ['--prefer-stable']
+         dependency-versions: ['highest']
 
-          # testing dev versions with highest PHP
-          - php-version: '8.1'
-            dependency-versions: 'highest'
-            composer-options: '' # allow dev deps
+        # normal, highest, non-dev installs
+#        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1']
+#        composer-options: ['--prefer-stable']
+#        dependency-versions: ['highest']
+#        include:
+#          # testing lowest PHP version with lowest dependencies
+#          - php-version: '7.2.5'
+#            dependency-versions: 'lowest'
+#            composer-options: '--prefer-lowest'
+#
+#          # testing dev versions with highest PHP
+#          - php-version: '8.1'
+#            dependency-versions: 'highest'
+#            composer-options: '' # allow dev deps
 
     steps:
       - name: "Checkout code"
@@ -50,6 +54,9 @@ jobs:
         with:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
+
+      - name: "Show vendor/bin"
+        run: "ls vendor/bin $GITHUB_WORKSPACE/vendor/bin"
 
       - name: Unit Tests
         run: $GITHUB_WORKSPACE/vendor/bin/simple-phpunit
