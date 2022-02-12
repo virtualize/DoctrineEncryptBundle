@@ -55,11 +55,8 @@ jobs:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
 
-      - name: "Show vendor/bin"
-        run: "ls vendor/bin $GITHUB_WORKSPACE/vendor/bin"
-
       - name: Unit Tests
-        run: $GITHUB_WORKSPACE/vendor/bin/simple-phpunit
+        run: vendor/bin/phpunit
 
       - name: Demo symfony4.4 - Install  dependencies
         uses: "ramsey/composer-install@v1"
@@ -69,7 +66,7 @@ jobs:
           working-directory: "demo/symfony4.4"
 
       - name: Demo symfony4.4 - Unit Tests
-        run: $GITHUB_WORKSPACE/demo/symfony4.4/vendor/bin/simple-phpunit -c $GITHUB_WORKSPACE/demo/symfony4.4/phpunit.xml.dist
+        run: demo/symfony4.4/vendor/bin/simple-phpunit -c demo/symfony4.4/phpunit.xml.dist
 
       - name: Demo symfony6.x - Install  dependencies
         uses: "ramsey/composer-install@v1"
@@ -79,4 +76,4 @@ jobs:
           working-directory: "demo/symfony6.x"
 
       - name: Demo symfony6.x - Unit Tests
-        run: $GITHUB_WORKSPACE/demo/symfony6.x/vendor/bin/simple-phpunit -c $GITHUB_WORKSPACE/demo/symfony6.x/phpunit.xml.dist
+        run: demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x/phpunit.xml.dist
