@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-         php-version: ['7.2']
+         php-version: ['7.2', '8.0']
          composer-options: ['--prefer-stable']
          dependency-versions: ['highest']
 
@@ -74,6 +74,8 @@ jobs:
           dependency-versions: "${{ matrix.dependency-versions }}"
           composer-options: "--prefer-dist --no-progress"
           working-directory: "demo/symfony6.x"
+        if: ${{ startsWith(matrix.php-version , '8.') }}
 
       - name: Demo symfony6.x - Unit Tests
         run: demo/symfony6.x/vendor/bin/simple-phpunit -c demo/symfony6.x/phpunit.xml.dist
+        if: ${{ startsWith(matrix.php-version , '8.') }}
