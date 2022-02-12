@@ -16,24 +16,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-         php-version: ['7.2', '8.0']
-         composer-options: ['--prefer-stable']
-         dependency-versions: ['highest']
-
         # normal, highest, non-dev installs
-#        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1']
-#        composer-options: ['--prefer-stable']
-#        dependency-versions: ['highest']
-#        include:
-#          # testing lowest PHP version with lowest dependencies
-#          - php-version: '7.2.5'
-#            dependency-versions: 'lowest'
-#            composer-options: '--prefer-lowest'
-#
-#          # testing dev versions with highest PHP
-#          - php-version: '8.1'
-#            dependency-versions: 'highest'
-#            composer-options: '' # allow dev deps
+        php-version: ['7.2', '7.3', '7.4', '8.0', '8.1']
+        composer-options: ['--prefer-stable']
+        dependency-versions: ['highest']
+        include:
+          # testing lowest PHP version with lowest dependencies
+          - php-version: '7.2.5'
+            dependency-versions: 'lowest'
+            composer-options: '--prefer-lowest'
+
+          # testing dev versions with highest PHP
+          - php-version: '8.1'
+            dependency-versions: 'highest'
+            composer-options: '' # allow dev deps
 
     steps:
       - name: "Checkout code"
