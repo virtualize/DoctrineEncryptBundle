@@ -58,6 +58,13 @@ jobs:
       - name: Unit Tests
         run: vendor/bin/phpunit
 
+      - name: Install symlinks for demo's
+        uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependency-versions }}"
+          composer-options: "--prefer-dist --no-progress"
+          working-directory: "demo"
+
       - name: Demo symfony4.4 - Install  dependencies
         uses: "ramsey/composer-install@v2"
         with:
