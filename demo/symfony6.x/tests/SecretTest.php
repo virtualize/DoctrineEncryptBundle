@@ -2,7 +2,6 @@
 
 namespace App\Tests;
 
-use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 use App\Entity;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +19,7 @@ class SecretTest extends KernelTestCase
     private function testSecretsAreEncryptedInDatabase(string $className)
     {
         /** @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
 
         // Make sure we do not store testdata
         $entityManager->beginTransaction();
@@ -61,7 +60,7 @@ class SecretTest extends KernelTestCase
      * @covers Entity\Annotation\Secret::getSecret
      * @covers Entity\Annotation\Secret::getName
      */
-    public function testAnnotationSecretsAreEncryptedInDatabase(): void
+    public function testAnnotationSecretsAreEncryptedInDatabase()
     {
         $this->testSecretsAreEncryptedInDatabase(Entity\Annotation\Secret::class);
     }
@@ -71,7 +70,7 @@ class SecretTest extends KernelTestCase
      * @covers Entity\Attribute\Secret::getName
      * @requires PHP 8.0
      */
-    public function testAttributeSecretsAreEncryptedInDatabase(): void
+    public function testAttributeSecretsAreEncryptedInDatabase()
     {
         $this->testSecretsAreEncryptedInDatabase(Entity\Attribute\Secret::class);
     }
