@@ -22,7 +22,8 @@
 		"defuse/php-encryption": "^2.1",
 		"doctrine/cache": "^1.11",
 		"phpstan/phpstan": "^1.4",
-		"jetbrains/phpstorm-attributes": "^1.0"
+		"jetbrains/phpstorm-attributes": "^1.0",
+		"phpcompatibility/php-compatibility": "^9.3"
 	},
 	"suggest": {
 		"defuse/php-encryption": "Alternative for halite for use with older php-versions",
@@ -32,6 +33,11 @@
 		"psr-4": {
 			"Ambta\\DoctrineEncryptBundle\\": "src/"
 		}
+	},
+	"scripts": {
+		"post-install-cmd": "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+		"post-update-cmd" : "\"vendor/bin/phpcs\" --config-set installed_paths vendor/phpcompatibility/php-compatibility",
+		"phpcs-compatibility-test" : "vendor/bin/phpcs src/ tests/ --standard=PHPCompatibility --runtime-set testVersion 7.2-8.1"
 	},
 	"autoload-dev": {
 		"psr-4": {

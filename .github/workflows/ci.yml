@@ -9,6 +9,38 @@ on:
   pull_request:
 
 jobs:
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: "Checkout code"
+        uses: "actions/checkout@v2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.0"
+
+      - name: "Validate composer.json"
+        run: "composer validate --strict --no-check-lock"
+
+      - name: "Validate php-files"
+        run:  "php -l src && php -l tests"
+
+      - name: "Composer install"
+        uses: "ramsey/composer-install@v2"
+        with:
+            composer-options: "--prefer-stable"
+            dependency-versions: 'highest'
+
+      - name: "PHPStan"
+        run:  "vendor/bin/phpstan analyze"
+
+      - name: "PHPCompatibility"
+        run:  "vendor/bin/phpcs src/ tests/ --standard=PHPCompatibility --runtime-set testVersion 7.2-8.1"
+
   tests:
     name: "Tests ${{ matrix.php-version }} ${{ matrix.dependency-versions }}"
     runs-on: ubuntu-18.04
