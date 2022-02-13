@@ -45,6 +45,7 @@ jobs:
   tests:
     name: "Tests ${{ matrix.php-version }} ${{ matrix.dependency-versions }}"
     runs-on: ubuntu-18.04
+    needs: static-analysis
 
     strategy:
       fail-fast: false
