@@ -2,6 +2,8 @@
 
 namespace Ambta\DoctrineEncryptBundle\DependencyInjection;
 
+use Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor;
+use Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -16,9 +18,9 @@ use Symfony\Component\DependencyInjection\Loader;
  */
 class DoctrineEncryptExtension extends Extension
 {
-    const SupportedEncryptorClasses = array(
-        'Defuse' => 'Ambta\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
-        'Halite' => 'Ambta\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
+    public const SupportedEncryptorClasses = array(
+        'Defuse' => DefuseEncryptor::class,
+        'Halite' => HaliteEncryptor::class,
     );
 
     /**
@@ -39,11 +41,22 @@ class DoctrineEncryptExtension extends Extension
 
         // Set parameters
         $container->setParameter('ambta_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
-        $container->setParameter('ambta_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
+        $container->setParameter('ambta_doctrine_encrypt.secret_directory_path',$config['secret_directory_path']);
+        $container->setParameter('ambta_doctrine_encrypt.enable_secret_generation',$config['enable_secret_generation']);
+
+        if (isset($config['secret'])) {
+            $container->setParameter('ambta_doctrine_encrypt.secret',$config['secret']);
+        }
 
         // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+
+        if (!isset($config['secret'])) {
+            $loader->load('services_with_secretfactory.yml');
+        } else {
+            $loader->load('services_with_secret.yml');
+        }
 
         // Remove usage of AttributeAnnotationReader when using php < 8.0
         if (PHP_VERSION_ID < 80000) {

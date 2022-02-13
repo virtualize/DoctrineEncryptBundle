@@ -12,20 +12,15 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class DefuseEncryptor implements EncryptorInterface
 {
-    /** @var Filesystem  */
-    private $fs;
-    /** @var string|null  */
-    private $encryptionKey = null;
     /** @var string  */
-    private $keyFile;
+    private $secret;
 
     /**
-     * {@inheritdoc}
+     * @param string $secret Secret used to encrypt/decrypt
      */
-    public function __construct(string $keyFile)
+    public function __construct(string $secret)
     {
-        $this->keyFile       = $keyFile;
-        $this->fs            = new Filesystem();
+        $this->secret = $secret;
     }
 
     /**
@@ -33,7 +28,7 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function encrypt(string $data): string
     {
-        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->getKey());
+        return \Defuse\Crypto\Crypto::encryptWithPassword($data, $this->secret);
     }
 
     /**
@@ -41,21 +36,6 @@ class DefuseEncryptor implements EncryptorInterface
      */
     public function decrypt(string $data): string
     {
-        return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->getKey());
-    }
-
-    private function getKey(): string
-    {
-        if ($this->encryptionKey === null) {
-            if ($this->fs->exists($this->keyFile)) {
-                $this->encryptionKey = file_get_contents($this->keyFile);
-            } else {
-                $string = random_bytes(255);
-                $this->encryptionKey = bin2hex($string);
-                $this->fs->dumpFile($this->keyFile, $this->encryptionKey);
-            }
-        }
-
-        return $this->encryptionKey;
+        return \Defuse\Crypto\Crypto::decryptWithPassword($data, $this->secret);
     }
 }
