@@ -3,6 +3,7 @@
 
 namespace Ambta\DoctrineEncryptBundle\Tests\Functional\DoctrineEncryptSubscriber;
 
+use Ambta\DoctrineEncryptBundle\Tests\DoctrineCompatibilityTrait;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\AbstractFunctionalTestCase;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\CascadeTarget;
 use Ambta\DoctrineEncryptBundle\Tests\Functional\fixtures\Entity\ClassTableInheritanceBase;
@@ -13,6 +14,8 @@ use Doctrine\DBAL\Logging\DebugStack;
 
 abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctionalTestCase
 {
+    use DoctrineCompatibilityTrait;
+
     public function testEncryptionHappensOnOnlyAnnotatedFields(): void
     {
         $secret    = "It's a secret";
@@ -35,7 +38,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertEquals($secret, $owner->getSecret());
         $this->assertEquals($notSecret, $owner->getNotSecret());
         $stmt->bindValue(1, $owner->getId());
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $this->assertEquals($notSecret, $result['notSecret']);
@@ -72,7 +75,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertEquals($secret, $cascadeTarget->getSecret());
         $this->assertEquals($notSecret, $cascadeTarget->getNotSecret());
         $stmt->bindValue(1, $cascadeTarget->getId());
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $this->assertEquals($notSecret, $result['notSecret']);
@@ -113,7 +116,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
 
         // Now check that the fields are encrypted in the database. First the base table.
         $stmtBase->bindValue(1, $child->getId());
-        $results = $stmtBase->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmtBase);
         self::assertCount(1, $results);
         $result = $results[0];
         self::assertEquals($notSecretBase, $result['notSecretBase']);
@@ -124,7 +127,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
 
         // and then the child table.
         $stmtChild->bindValue(1, $child->getId());
-        $results = $stmtChild->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmtChild);
         self::assertCount(1, $results);
         $result = $results[0];
         self::assertEquals($notSecretChild, $result['notSecretChild']);
@@ -158,7 +161,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmt       = $connection->prepare('SELECT * from owner WHERE id = ?');
         $stmt->bindValue(1, $owner1Id);
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $originalEncryption = $result['secret'];
@@ -191,7 +194,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertCount(0, $stack->queries, "Unexpected queries:\n".var_export($stack->queries, true));
 
         $stmt->bindValue(1, $owner1Id);
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $shouldBeTheSameAsBefore = $result['secret'];
@@ -223,7 +226,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmtBase   = $connection->prepare('SELECT * from classTableInheritanceBase WHERE id = ?');
         $stmtBase->bindValue(1, $childId);
-        $result = $stmtBase->executeQuery()->fetchAssociative();
+        $result = $this->executeStatementFetch($stmtBase);
         $originalEncryptionBase = $result['secretBase'];
         self::assertStringEndsWith('<ENC>', $originalEncryptionBase); // is encrypted
 
@@ -231,7 +234,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmtChild   = $connection->prepare('SELECT * from classTableInheritanceChild WHERE id = ?');
         $stmtChild->bindValue(1, $childId);
-        $result = $stmtChild->executeQuery()->fetchAssociative();
+        $result = $this->executeStatementFetch($stmtChild);
         $originalEncryptionChild = $result['secretChild'];
         self::assertStringEndsWith('<ENC>', $originalEncryptionChild); // is encrypted
 
@@ -263,13 +266,13 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         self::assertCount(0, $stack->queries, "Unexpected queries:\n" . var_export($stack->queries, true));
 
         $stmtBase->bindValue(1, $childId);
-        $result = $stmtBase->executeQuery()->fetchAssociative();
+        $result = $this->executeStatementFetch($stmtBase);
         $shouldBeTheSameAsBeforeBase = $result['secretBase'];
         self::assertStringEndsWith('<ENC>', $shouldBeTheSameAsBeforeBase); // is encrypted
         self::assertEquals($originalEncryptionBase, $shouldBeTheSameAsBeforeBase);
 
         $stmtChild->bindValue(1, $childId);
-        $result = $stmtChild->executeQuery()->fetchAssociative();
+        $result = $this->executeStatementFetch($stmtChild);
         $shouldBeTheSameAsBeforeChild = $result['secretChild'];
         self::assertStringEndsWith('<ENC>', $shouldBeTheSameAsBeforeChild); // is encrypted
         self::assertEquals($originalEncryptionChild, $shouldBeTheSameAsBeforeChild);
@@ -293,7 +296,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $connection = $em->getConnection();
         $stmt       = $connection->prepare('SELECT * from owner WHERE id = ?');
         $stmt->bindValue(1, $ownerId);
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $originalEncryption = $result['secret'];
@@ -309,7 +312,7 @@ abstract class AbstractDoctrineEncryptSubscriberTestCase extends AbstractFunctio
         $this->assertGreaterThan($beforeFlush, $afterFlush);
 
         $stmt->bindValue(1, $ownerId);
-        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $results = $this->executeStatementFetchAll($stmt);
         $this->assertCount(1, $results);
         $result = $results[0];
         $shouldBeDifferentFromBefore = $result['secret'];
