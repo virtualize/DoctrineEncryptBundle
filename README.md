@@ -65,5 +65,5 @@ Filename example: `.DefuseEncryptor.key` or `.HaliteEncryptor.key`
 
 ### Demo
 
-A demo-installation using symfony 4.4 can be found in this repository in demo/symfony4.4.  This demonstrates how to use 
+Two demo-installations, one using symfony 4.4 and one using symfony 6.x, can be found in this repository in [`demo`](demo).  This demonstrates how to use 
 the application using both annotations and, when using php > 8.0, attributes.
