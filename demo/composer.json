@@ -7,10 +7,15 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "Kporras07\\ComposerSymlinks\\ScriptHandler::createSymlinks"
+            "@installScripts"
         ],
         "post-update-cmd": [
-            "Kporras07\\ComposerSymlinks\\ScriptHandler::createSymlinks"
+            "@installScripts"
+        ],
+        "installScripts" : [
+            "Kporras07\\ComposerSymlinks\\ScriptHandler::createSymlinks",
+            "printf 'HALITE_SECRET=\"%s\"' \"$(cat shared/.Halite.key)\" > symfony6.x/.env.local",
+            "printf 'HALITE_SECRET=\"%s\"' \"$(cat shared/.Halite.key)\" > symfony6.x/.env.test.local"
         ]
     },
     "extra": {
@@ -19,8 +24,7 @@
             "./shared/templates":   "symfony6.x/templates",
             "shared/var/data.db":   "symfony4.4/var/data.db",
             "./shared/var/data.db": "symfony6.x/var/data.db",
-            "shared/.Halite.key":   "symfony4.4/.Halite.key",
-            "./shared/.Halite.key": "symfony6.x/.Halite.key"
+            "shared/.Halite.key":   "symfony4.4/.Halite.key"
         }
     }
 }
