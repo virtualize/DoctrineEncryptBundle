@@ -2,7 +2,6 @@
 
 namespace Ambta\DoctrineEncryptBundle\Encryptors;
 
-use ParagonIE\Halite\Alerts\CannotPerformOperation;
 use ParagonIE\Halite\Symmetric\EncryptionKey;
 use ParagonIE\HiddenString\HiddenString;
 use ParagonIE\Halite\KeyFactory;
@@ -19,14 +18,14 @@ class HaliteEncryptor implements EncryptorInterface
     /** @var EncryptionKey|null  */
     private $encryptionKey = null;
     /** @var string */
-    private $keyFile;
+    private $secret;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(string $keyFile)
+    public function __construct(string $secret)
     {
-        $this->keyFile = $keyFile;
+        $this->secret = $secret;
     }
 
     /**
@@ -48,14 +47,14 @@ class HaliteEncryptor implements EncryptorInterface
     private function getKey(): EncryptionKey
     {
         if ($this->encryptionKey === null) {
-            try {
-                $this->encryptionKey = KeyFactory::loadEncryptionKey($this->keyFile);
-            } catch (CannotPerformOperation $e) {
-                $this->encryptionKey = KeyFactory::generateEncryptionKey();
-                KeyFactory::save($this->encryptionKey, $this->keyFile);
-            }
+            $this->encryptionKey = KeyFactory::importEncryptionKey(new HiddenString($this->secret));
         }
 
         return $this->encryptionKey;
+    }
+
+    public function validateSecret()
+    {
+        $this->getKey();
     }
 }

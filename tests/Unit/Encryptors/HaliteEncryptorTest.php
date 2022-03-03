@@ -16,32 +16,12 @@ class HaliteEncryptorTest extends TestCase
         }
         $keyfile = __DIR__.'/fixtures/halite.key';
         $key = file_get_contents($keyfile);
-        $halite = new HaliteEncryptor($keyfile);
+        $halite = new HaliteEncryptor($key);
 
         $encrypted = $halite->encrypt(self::DATA);
         $this->assertNotSame(self::DATA, $encrypted);
         $decrypted = $halite->decrypt($encrypted);
 
-        $this->assertSame(self::DATA, $decrypted);
-        $newkey = file_get_contents($keyfile);
-        $this->assertSame($key, $newkey, 'The key must not be modified');
-    }
-
-    public function testGenerateKey(): void
-    {
-        if (! extension_loaded('sodium') && !class_exists('ParagonIE_Sodium_Compat')) {
-            $this->markTestSkipped('This test only runs when the sodium extension is enabled.');
-        }
-        $keyfile = sys_get_temp_dir().'/halite-'.md5(time());
-        if (file_exists($keyfile)) {
-            unlink($keyfile);
-        }
-        $halite = new HaliteEncryptor($keyfile);
-        $halite->encrypt(self::DATA);
-
-        $this->assertFileExists($keyfile);
-        $this->assertNotEmpty(file_get_contents($keyfile), 'A key should have been created and saved to the file');
-
-        unlink($keyfile);
+        $this->assertSame(self::DATA, $decrypted);;
     }
 }

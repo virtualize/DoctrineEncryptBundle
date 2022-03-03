@@ -31,14 +31,29 @@ class Configuration implements ConfigurationInterface
 
         // Grammar of config tree
         $rootNode
-                ->children()
-                    ->scalarNode('encryptor_class')
-                        ->defaultValue('Halite')
-                    ->end()
-                    ->scalarNode('secret_directory_path')
-                        ->defaultValue('%kernel.project_dir%')
-                    ->end()
-                ->end();
+            ->beforeNormalization()
+                ->always(function ($v) {
+                    if (isset($v['secret']) && isset($v['secret_directory_path'])) {
+                        throw new \InvalidArgumentException('The "secret" and "secret_directory_path" cannot be used along together.');
+                    }
+
+                    return $v;
+                })
+            ->end()
+            ->children()
+                ->scalarNode('encryptor_class')
+                    ->defaultValue('Halite')
+                ->end()
+                ->scalarNode('secret_directory_path')
+                    ->defaultValue('%kernel.project_dir%')
+                ->end()
+                ->booleanNode('enable_secret_generation')
+                    ->defaultValue(true)
+                ->end()
+                ->scalarNode('secret')
+                    ->defaultValue(null)
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

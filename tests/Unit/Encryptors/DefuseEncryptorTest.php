@@ -23,19 +23,4 @@ class DefuseEncryptorTest extends TestCase
         $newkey = file_get_contents($keyfile);
         $this->assertSame($key, $newkey, 'The key must not be modified');
     }
-
-    public function testGenerateKey(): void
-    {
-        $keyfile = sys_get_temp_dir().'/defuse-'.md5(time());
-        if (file_exists($keyfile)) {
-            unlink($keyfile);
-        }
-        $defuse = new DefuseEncryptor($keyfile);
-        $defuse->encrypt(self::DATA);
-
-        $this->assertFileExists($keyfile);
-        $this->assertNotEmpty(file_get_contents($keyfile), 'A key should have been created and saved to the file');
-
-        unlink($keyfile);
-    }
 }
