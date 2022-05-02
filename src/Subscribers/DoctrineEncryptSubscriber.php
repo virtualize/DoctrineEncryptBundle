@@ -71,6 +71,15 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /** @var array */
     private $cachedDecryptions = [];
 
+    /** @var array */
+    private $cachedClassProperties = [];
+
+    /** @var array */
+    private $cachedClassPropertiesAreEmbedded = [];
+
+    /** @var array */
+    private $cachedClassPropertiesAreEncrypted = [];
+
     /**
      * Initialization of subscriber
      *
@@ -255,7 +264,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
             // Foreach property in the reflection class
             foreach ($properties as $refProperty) {
-                if ($this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded')) {
+                if ($this->isPropertyAnEmbeddedMapping($refProperty)) {
                     $this->handleEmbeddedAnnotation($entity, $entityManager, $refProperty, $isEncryptOperation);
                     continue;
                 }
@@ -263,7 +272,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                 /**
                  * If property is an normal value and contains the Encrypt tag, lets encrypt/decrypt that property
                  */
-                if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+                if ($this->isPropertyEncryped($refProperty)) {
                     $rootEntityName = $entityManager->getClassMetadata(get_class($entity))->rootEntityName;
 
                     $pac = PropertyAccess::createPropertyAccessor();
@@ -320,22 +329,52 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     private function getClassProperties(string $className): array
     {
-        $reflectionClass = new ReflectionClass($className);
-        $properties      = $reflectionClass->getProperties();
-        $propertiesArray = array();
+        if (!array_key_exists($className,$this->cachedClassProperties)) {
+            $reflectionClass = new ReflectionClass($className);
+            $properties      = $reflectionClass->getProperties();
+            $propertiesArray = array();
 
-        foreach ($properties as $property) {
-            $propertyName = $property->getName();
-            $propertiesArray[$propertyName] = $property;
-        }
-
-        if ($parentClass = $reflectionClass->getParentClass()) {
-            $parentPropertiesArray = $this->getClassProperties($parentClass->getName());
-            if (count($parentPropertiesArray) > 0) {
-                $propertiesArray = array_merge($parentPropertiesArray, $propertiesArray);
+            foreach ($properties as $property) {
+                $propertyName = $property->getName();
+                $propertiesArray[$propertyName] = $property;
             }
+
+            if ($parentClass = $reflectionClass->getParentClass()) {
+                $parentPropertiesArray = $this->getClassProperties($parentClass->getName());
+                if (count($parentPropertiesArray) > 0) {
+                    $propertiesArray = array_merge($parentPropertiesArray, $propertiesArray);
+                }
+            }
+
+            $this->cachedClassProperties[$className] = $propertiesArray;
         }
 
-        return $propertiesArray;
+        return $this->cachedClassProperties[$className];
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPropertyAnEmbeddedMapping(ReflectionProperty $refProperty)
+    {
+        $key = $refProperty->getDeclaringClass().$refProperty->getName();
+        if (!array_key_exists($key,$this->cachedClassPropertiesAreEmbedded)) {
+            $this->cachedClassPropertiesAreEmbedded[$key] = (bool) $this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded');
+        }
+
+        return $this->cachedClassPropertiesAreEmbedded[$key];
+    }
+
+    /**
+     * @return bool
+     */
+    private function isPropertyEncryped(ReflectionProperty $refProperty)
+    {
+        $key = $refProperty->getDeclaringClass().$refProperty->getName();
+        if (!array_key_exists($key,$this->cachedClassPropertiesAreEncrypted)) {
+            $this->cachedClassPropertiesAreEncrypted[$key] = (bool) $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
+        }
+
+        return $this->cachedClassPropertiesAreEncrypted[$key];
     }
 }

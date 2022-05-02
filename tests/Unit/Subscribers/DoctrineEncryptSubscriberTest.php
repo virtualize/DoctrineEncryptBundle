@@ -107,7 +107,7 @@ class DoctrineEncryptSubscriberTest extends TestCase
         $this->assertSame($this->encryptor, $this->subscriber->getEncryptor());
     }
 
-    protected function triggerProcessFields(Object $entity,bool $encrypt)
+    private function triggerProcessFields(Object $entity, bool $encrypt)
     {
         $class  = new ReflectionClass(DoctrineEncryptSubscriber::class);
         $method = $class->getMethod('processFields');
@@ -293,5 +293,36 @@ class DoctrineEncryptSubscriberTest extends TestCase
 
         $this->assertSame('David', $user->name);
         $this->assertSame('Switzerland', $user->getAddress());
+    }
+
+    public function testAnnotationsAreOnlyReadOnce(): void
+    {
+        $reader = $this->createMock(Reader::class);
+        $reader->expects($this->exactly(4)) // 2 properties and test if embedded and encrypted
+            ->method('getPropertyAnnotation')
+            ->willReturnCallback(function (\ReflectionProperty $reflProperty, string $class) {
+                if (Encrypted::class === $class) {
+                    return \in_array($reflProperty->getName(), ['name', 'address', 'extra']);
+                }
+                if (Embedded::class === $class) {
+                    return 'user' === $reflProperty->getName();
+                }
+
+                return false;
+            })
+        ;
+
+        $subscriber = new DoctrineEncryptSubscriber($reader, $this->encryptor);
+
+
+        $user = new User('David', 'Switzerland');
+
+        $class  = new ReflectionClass(DoctrineEncryptSubscriber::class);
+        $method = $class->getMethod('processFields');
+        $method->setAccessible(true);
+        $method->invokeArgs($subscriber,[$user,$this->em,true]);
+
+        // Execute second time and see if we once more read the propertyannotation
+        $method->invokeArgs($subscriber,[$user,$this->em,true]);
     }
 }
