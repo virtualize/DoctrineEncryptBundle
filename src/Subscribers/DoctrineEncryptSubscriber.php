@@ -80,6 +80,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /** @var array */
     private $cachedClassPropertiesAreEncrypted = [];
 
+    /** @var array */
+    private $cachedClassesContainAnEncryptProperty = [];
+
     /**
      * Initialization of subscriber
      *
@@ -209,7 +212,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $unitOfWork = $postFlushEventArgs->getEntityManager()->getUnitOfWork();
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {
             foreach ($entityMap as $entity) {
-                $classMetadata = $postFlushEventArgs->getEntityManager()->getClassMetadata(get_class($entity));
                 $this->processFields($entity,$postFlushEventArgs->getEntityManager(), false);
             }
         }
@@ -253,7 +255,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function processFields(object $entity,  EntityManagerInterface $entityManager, bool $isEncryptOperation = true): ?object
     {
-        if (!empty($this->encryptor)) {
+        if (!empty($this->encryptor) && $this->containsEncryptProperties($entity)) {
             // Check which operation to be used
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
 
@@ -325,7 +327,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param string $className Class name
      *
-     * @return array
+     * @return array|ReflectionProperty[]
      */
     private function getClassProperties(string $className): array
     {
@@ -357,7 +359,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     private function isPropertyAnEmbeddedMapping(ReflectionProperty $refProperty)
     {
-        $key = $refProperty->getDeclaringClass().$refProperty->getName();
+        $key = $refProperty->getDeclaringClass()->getName().$refProperty->getName();
         if (!array_key_exists($key,$this->cachedClassPropertiesAreEmbedded)) {
             $this->cachedClassPropertiesAreEmbedded[$key] = (bool) $this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded');
         }
@@ -370,11 +372,42 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     private function isPropertyEncryped(ReflectionProperty $refProperty)
     {
-        $key = $refProperty->getDeclaringClass().$refProperty->getName();
+        $key = $refProperty->getDeclaringClass()->getName().$refProperty->getName();
         if (!array_key_exists($key,$this->cachedClassPropertiesAreEncrypted)) {
             $this->cachedClassPropertiesAreEncrypted[$key] = (bool) $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
         }
 
         return $this->cachedClassPropertiesAreEncrypted[$key];
+    }
+
+    private function containsEncryptProperties($entity)
+    {
+        $realClass = ClassUtils::getClass($entity);
+
+        if (!array_key_exists($realClass,$this->cachedClassesContainAnEncryptProperty)) {
+            $this->cachedClassesContainAnEncryptProperty[$realClass] = false;
+
+            // Get ReflectionClass of our entity
+            $properties = $this->getClassProperties($realClass);
+
+            // Foreach property in the reflection class
+            foreach ($properties as $refProperty) {
+                if ($this->isPropertyAnEmbeddedMapping($refProperty)) {
+                    $pac = PropertyAccess::createPropertyAccessor();
+
+                    $embeddedEntity = $pac->getValue($entity, $refProperty->getName());
+
+                    if ($this->containsEncryptProperties($embeddedEntity)) {
+                        $this->cachedClassesContainAnEncryptProperty[$realClass] = true;
+                    }
+                } else {
+                    if ($this->isPropertyEncryped($refProperty)) {
+                        $this->cachedClassesContainAnEncryptProperty[$realClass] = true;
+                    }
+                }
+            }
+        }
+
+        return $this->cachedClassesContainAnEncryptProperty[$realClass];
     }
 }
